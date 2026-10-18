@@ -7,7 +7,7 @@ from typing import cast
 import pytest
 from PIL import Image
 
-from petpet_gif import OverlayAnchor, petpet
+from headpat_gif import OverlayAnchor, petpet
 from support import frame_alpha_boxes
 
 CANVAS = 100

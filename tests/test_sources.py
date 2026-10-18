@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 from PIL import Image
 
-from petpet_gif import petpet
+from headpat_gif import petpet
 from support import (
     OneShotStream,
     Pixel,

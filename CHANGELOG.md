@@ -40,4 +40,4 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   instead of resting after a single pat. Looping now fits a whole number of
   cycles into `duration`, so the infinitely looping GIF has no visible jump.
 
-[Unreleased]: https://github.com/NotKeKe/petpet-gif/commits/main
+[Unreleased]: https://github.com/NotKeKe/headpat-gif/commits/main

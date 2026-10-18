@@ -53,7 +53,7 @@ jobs:
           import glob, zipfile
           wheel = sorted(glob.glob("dist/*.whl"))[-1]
           names = set(zipfile.ZipFile(wheel).namelist())
-          assert "petpet_gif/assets/default_overlay.gif" in names, names
-          assert "petpet_gif/py.typed" in names, names
+          assert "headpat_gif/assets/default_overlay.gif" in names, names
+          assert "headpat_gif/py.typed" in names, names
           print("wheel ok:", wheel)
           PY

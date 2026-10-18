@@ -7,11 +7,11 @@ from pathlib import Path
 
 from PIL import Image
 
-from petpet_gif import PetPetGif, petpet
+from headpat_gif import PetPetGif, petpet
 from support import frame_delays
 
 
-def test_name_defaults_to_petpet_gif(subject: Image.Image) -> None:
+def test_name_defaults_to_headpat_gif(subject: Image.Image) -> None:
     assert petpet(subject, duration=0.5).name == "petpet.gif"
 
 

@@ -16,7 +16,7 @@ from pathlib import Path
 
 from PIL import Image
 
-from petpet_gif import ANCHORS, petpet
+from headpat_gif import ANCHORS, petpet
 
 #: Where ``--out`` defaults to when it is not given.
 DEFAULT_OUT = Path(__file__).parent / "out" / "try-yours.gif"

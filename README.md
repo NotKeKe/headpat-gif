@@ -1,7 +1,7 @@
-# petpet-gif
+# headpat-gif
 
-[![PyPI](https://img.shields.io/pypi/v/petpet-gif.svg)](https://pypi.org/project/petpet-gif/)
-[![Python versions](https://img.shields.io/pypi/pyversions/petpet-gif.svg)](https://pypi.org/project/petpet-gif/)
+[![PyPI](https://img.shields.io/pypi/v/headpat-gif.svg)](https://pypi.org/project/headpat-gif/)
+[![Python versions](https://img.shields.io/pypi/pyversions/headpat-gif.svg)](https://pypi.org/project/headpat-gif/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 Turn any image into a "pet-pet" GIF: a hand pats the subject on the head while
@@ -9,7 +9,7 @@ the subject squashes flat and springs back, exactly like clicking a pet in the
 reference demo.
 
 ```python
-from petpet_gif import petpet
+from headpat_gif import petpet
 
 gif = petpet("pet.png", duration=2.0)
 gif.save("pet.gif")
@@ -21,7 +21,7 @@ goes straight into `discord.File` with no temporary file:
 
 ```python
 import discord
-from petpet_gif import petpet
+from headpat_gif import petpet
 
 @bot.command()
 async def pet(ctx, url: str):
@@ -31,8 +31,8 @@ async def pet(ctx, url: str):
 ## Install
 
 ```bash
-uv add petpet-gif          # or: pip install petpet-gif
-uv add "petpet-gif[discord]"   # optional: pulls discord.py for the test suite
+uv add headpat-gif          # or: pip install headpat-gif
+uv add "headpat-gif[discord]"   # optional: pulls discord.py for the test suite
 ```
 
 Requires Python 3.10+ and Pillow 10+. ASCII-art style GIFs are left to you; the
@@ -41,7 +41,7 @@ only runtime dependency is Pillow.
 ## Usage
 
 ```python
-from petpet_gif import petpet, save
+from headpat_gif import petpet, save
 
 # One pat, as long as the overlay takes to play.
 gif = petpet("pet.png")
@@ -208,7 +208,7 @@ Bump `version` in `pyproject.toml`, note it in `CHANGELOG.md`, then either:
 **By hand**, with an API token from <https://pypi.org/manage/account/token/>:
 
 ```bash
-uv build                       # dist/petpet_gif-<version>-py3-none-any.whl + sdist
+uv build                       # dist/headpat_gif-<version>-py3-none-any.whl + sdist
 uvx twine check dist/*         # a README PyPI would reject fails here, not there
 UV_PUBLISH_TOKEN=pypi-... uv publish
 ```

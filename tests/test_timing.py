@@ -5,8 +5,8 @@ from __future__ import annotations
 import pytest
 from PIL import Image
 
-from petpet_gif import petpet
-from petpet_gif._compose import MIN_DELAY_MS
+from headpat_gif import petpet
+from headpat_gif._compose import MIN_DELAY_MS
 from support import frame_delays
 
 CYCLE_MS = 150  # the overlay_gif fixture: 3 frames x 50ms

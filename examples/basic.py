@@ -10,7 +10,7 @@ from pathlib import Path
 
 from PIL import Image
 
-from petpet_gif import petpet, save
+from headpat_gif import petpet, save
 
 OUT = Path(__file__).parent / "out"
 

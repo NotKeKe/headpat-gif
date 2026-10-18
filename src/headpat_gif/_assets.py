@@ -21,7 +21,7 @@ def asset_bytes(name: str) -> bytes:
     The asset is read through :mod:`importlib.resources`, so it also resolves
     when the package is imported from a zip or a wheel without unpacking.
     """
-    resource = files("petpet_gif").joinpath(ASSET_DIR).joinpath(name)
+    resource = files("headpat_gif").joinpath(ASSET_DIR).joinpath(name)
     try:
         return resource.read_bytes()
     except (FileNotFoundError, NotADirectoryError, IsADirectoryError) as exc:

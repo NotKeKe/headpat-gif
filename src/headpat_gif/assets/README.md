@@ -4,7 +4,7 @@
 | --- | --- |
 | `default_overlay.gif` | The patting hand shown on the head when `petpet()` is called without `overlay`. 107x112, 5 frames x 70ms, transparent. |
 
-Used through `petpet_gif._assets`, which reads the file with
+Used through `headpat_gif._assets`, which reads the file with
 `importlib.resources` so it resolves from a wheel, an sdist install or a zipped
 package alike.
 

@@ -9,11 +9,11 @@ from typing import Any
 import pytest
 from PIL import Image
 
-from petpet_gif import PetPetGif, petpet, save
+from headpat_gif import PetPetGif, petpet, save
 from support import PNG_BYTES, OneShotStream, as_source, frame_delays
 
 
-def test_returns_a_petpet_gif(subject: Image.Image) -> None:
+def test_returns_a_headpat_gif(subject: Image.Image) -> None:
     result = petpet(subject)
 
     assert isinstance(result, PetPetGif)

@@ -7,8 +7,8 @@ import io
 import pytest
 from PIL import Image
 
-from petpet_gif import DEFAULT_OVERLAY_NAME, petpet
-from petpet_gif._assets import ASSET_DIR, asset_bytes, load_default_overlay
+from headpat_gif import DEFAULT_OVERLAY_NAME, petpet
+from headpat_gif._assets import ASSET_DIR, asset_bytes, load_default_overlay
 from support import frame_delays
 
 
@@ -43,7 +43,7 @@ def test_the_asset_lives_inside_the_package() -> None:
     # It has to sit inside the importable package for the wheel to ship it.
     from importlib.resources import files
 
-    inside_package = files("petpet_gif").joinpath(ASSET_DIR).joinpath(DEFAULT_OVERLAY_NAME)
+    inside_package = files("headpat_gif").joinpath(ASSET_DIR).joinpath(DEFAULT_OVERLAY_NAME)
 
     assert inside_package.is_file()
     assert inside_package.read_bytes() == asset_bytes(DEFAULT_OVERLAY_NAME)

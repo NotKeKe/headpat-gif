@@ -16,7 +16,7 @@ import urllib.request
 import discord
 from discord.ext import commands
 
-from petpet_gif import petpet
+from headpat_gif import petpet
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -24,7 +24,7 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 
 def fetch(url: str) -> bytes:
-    request = urllib.request.Request(url, headers={"User-Agent": "petpet-gif-example"})
+    request = urllib.request.Request(url, headers={"User-Agent": "headpat-gif-example"})
     with urllib.request.urlopen(request, timeout=15) as response:
         return response.read()
 

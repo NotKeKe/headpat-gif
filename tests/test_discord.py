@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 from PIL import Image
 
-from petpet_gif import PetPetGif, petpet
+from headpat_gif import PetPetGif, petpet
 
 discord = pytest.importorskip("discord")
 

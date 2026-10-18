@@ -7,7 +7,7 @@ from pathlib import Path
 
 from PIL import Image
 
-from petpet_gif import petpet
+from headpat_gif import petpet
 from support import count_colour, frame_rgba, frame_windows, gif_frames, pixel
 
 CANVAS = 100
@@ -32,7 +32,7 @@ def test_every_frame_restores_the_canvas_before_the_next_one(subject: Image.Imag
     # Disposal 3 ("restore to previous") is what keeps a moving overlay from
     # leaving a trail. Disposal 2 would restore the *background colour* instead,
     # which some decoders paint opaque black and others simply ignore - see the
-    # module docstring of petpet_gif._palette.
+    # module docstring of headpat_gif._palette.
     frames = gif_frames(petpet(subject, duration=0.5).to_bytes())
 
     assert frames

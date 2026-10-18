@@ -106,7 +106,7 @@ def petpet(
         name: Filename reported to Discord for the attachment.
 
     Returns:
-        A :class:`~petpet_gif.PetPetGif`, i.e. an ``io.BytesIO`` that
+        A :class:`~headpat_gif.PetPetGif`, i.e. an ``io.BytesIO`` that
         ``discord.File`` accepts directly.
 
     Raises:
@@ -115,7 +115,7 @@ def petpet(
         FileNotFoundError: If a path or the packaged default asset is missing.
 
     Example:
-        >>> from petpet_gif import petpet
+        >>> from headpat_gif import petpet
         >>> gif = petpet("pet.png", duration=2.0, speed=1.5)
         >>> _ = gif.save("pet.gif")
     """

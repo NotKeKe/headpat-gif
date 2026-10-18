@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "petpet-gif"
+name = "headpat-gif"
 version = "0.1.0"
 description = "Generate \"pet-pet\" GIFs: a hand pats the head of any image while the subject squashes and springs back. Returns an object you can hand straight to discord.py."
 readme = "README.md"
@@ -32,10 +32,10 @@ classifiers = [
 dependencies = ["pillow>=10.0.0"]
 
 [project.urls]
-Homepage = "https://github.com/NotKeKe/petpet-gif"
-Repository = "https://github.com/NotKeKe/petpet-gif"
-Issues = "https://github.com/NotKeKe/petpet-gif/issues"
-Changelog = "https://github.com/NotKeKe/petpet-gif/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/NotKeKe/headpat-gif"
+Repository = "https://github.com/NotKeKe/headpat-gif"
+Issues = "https://github.com/NotKeKe/headpat-gif/issues"
+Changelog = "https://github.com/NotKeKe/headpat-gif/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 discord = ["discord.py>=2.3"]
@@ -51,7 +51,7 @@ dev = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/petpet_gif"]
+packages = ["src/headpat_gif"]
 
 [tool.hatch.build.targets.sdist]
 include = [
@@ -123,4 +123,4 @@ ignore = ["EM101", "EM102"]
 "examples/*" = ["T20"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["petpet_gif"]
+known-first-party = ["headpat_gif"]

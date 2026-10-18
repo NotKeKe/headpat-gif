@@ -16,7 +16,7 @@ from typing import TYPE_CHECKING
 import pytest
 from PIL import Image
 
-from petpet_gif import petpet
+from headpat_gif import petpet
 
 if TYPE_CHECKING:
     from collections.abc import Iterator

@@ -12,7 +12,7 @@ from typing import IO, cast
 
 from PIL import Image
 
-from petpet_gif import ImageSource
+from headpat_gif import ImageSource
 
 #: Anything :func:`petpet` accepts, re-exported so tests do not re-declare it.
 Source = ImageSource

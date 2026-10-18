@@ -1,9 +1,9 @@
-"""petpet-gif - make a "pet-pet" GIF from any image.
+"""headpat-gif - make a "pet-pet" GIF from any image.
 
 The subject is squashed and sprung back while a hand pats it on the head, and
 the result comes back as an object you can hand straight to ``discord.File``::
 
-    from petpet_gif import petpet
+    from headpat_gif import petpet
 
     gif = petpet("pet.png", duration=2.0)
     gif.save("pet.gif")
@@ -37,6 +37,6 @@ __all__ = [
 ]
 
 try:
-    __version__ = version("petpet-gif")
+    __version__ = version("headpat-gif")
 except PackageNotFoundError:  # pragma: no cover - raw checkout without an install
     __version__ = "0.0.0"
