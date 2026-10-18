@@ -1,0 +1,11 @@
+# Keep LF in the repository no matter what the platform checks out with, so a
+# Windows clone does not rewrite every file.
+* text=auto eol=lf
+
+# Artwork: never touch the bytes.
+*.gif binary
+*.png binary
+*.webp binary
+
+# Lockfiles and generated metadata are text.
+uv.lock text

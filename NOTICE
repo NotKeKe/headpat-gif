@@ -1,0 +1,58 @@
+# Notices
+
+`petpet-gif` is MIT licensed (see `LICENSE`). It ships one piece of third-party
+artwork and ports one third-party code path; both are recorded here.
+
+## Bundled artwork
+
+`src/petpet_gif/assets/default_overlay.gif`
+
+- Source: <https://media.tenor.com/3EbQTgb3eqwAAAAi/petpet-transparent.gif>
+- Retrieved: 2026-10-17
+- Properties: 107x112, 5 frames x 70ms, transparent GIF
+- Rights: this animation was **not** created for this project. It came from
+  Tenor at the request of the project owner and is redistributed here as the
+  default overlay. Tenor content is owned by its respective uploaders and is
+  used under Tenor's terms; replace it with your own artwork before publishing a
+  fork if that matters for your distribution.
+- If you only need the library, nothing else requires this asset: pass your own
+  `overlay=` and it is never touched.
+
+`docs/reference/minecraft-goat-petting.webp`
+
+- Source: <https://cdn.modrinth.com/data/cached_images/241f2e2d59483053ded36c5fd41ba80a038258bb.webp>
+- Retrieved: 2026-10-17
+- Properties: 600x300, 13 frames x 30ms animated WebP
+- Role: design reference only (the on-screen behaviour this library reproduces).
+  It is not part of the built wheel or sdist.
+
+## Ported code
+
+`src/petpet_gif/_palette.py`
+
+- The transparent animated GIF technique is a deterministic port of the
+  workaround published by **egocarib** in
+  <https://github.com/python-pillow/Pillow/issues/4644> (comment on
+  <https://github.com/python-pillow/Pillow/issues/4640>), and used by
+  **camprevail**'s <https://github.com/camprevail/pet-pet-gif> - both MIT
+  licensed.
+- Changes from the original: no use of `random` (a deterministic free-colour
+  search instead) so identical input always produces identical bytes; an
+  adaptive palette via `Image.quantize` instead of `convert("P")`, which would
+  snap every colour onto Pillow's fixed 216-colour WEB palette; palette parsing
+  made defensive against unused slots; helper names prefixed with `_`.
+- **Deliberate deviation:** frames are written with disposal method **3**
+  ("restore to previous") instead of the original's **2** ("restore to
+  background"). Restoring to the background colour is decoded inconsistently -
+  FFmpeg paints the transparent region opaque black, Pillow keeps the previous
+  frame - which the original gets away with only because its paw sits in the
+  same place in every frame. Disposal 3 gives every frame exactly the pixels
+  that were rendered for it, in FFmpeg, Pillow and browsers alike, which is what
+  lets an overlay move and leave. Verified with `ffmpeg -vsync 0` and with
+  Pillow's reader; guarded by `tests/test_transparency.py`.
+
+The squash amplitude constants in `src/petpet_gif/_compose.py`
+(`WIDTH_SWING`, `HEIGHT_SWING`, bottom anchor `0.92`) mirror the geometry of
+`camprevail/pet-pet-gif` (MIT) so the motion matches the GIFs people recognise.
+No code was copied from that repository - the composition code here is written
+against its published parameters.

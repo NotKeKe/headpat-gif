@@ -1,0 +1,125 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "petpet-gif"
+version = "0.1.0"
+description = "Generate \"pet-pet\" GIFs: a hand pats the head of any image while the subject squashes and springs back. Returns an object you can hand straight to discord.py."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Mark", email = "mark@example.com" }]
+keywords = ["petpet", "pet-pet", "petthe", "pet the", "goat", "gif", "pillow", "discord"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Multimedia :: Graphics :: Graphics Conversion",
+    "Topic :: Multimedia :: Graphics :: Presentation",
+    "Typing :: Typed",
+]
+dependencies = ["pillow>=10.0.0"]
+
+[project.urls]
+Homepage = "https://github.com/OWNER/petpet-gif"
+Repository = "https://github.com/OWNER/petpet-gif"
+Issues = "https://github.com/OWNER/petpet-gif/issues"
+Changelog = "https://github.com/OWNER/petpet-gif/blob/main/CHANGELOG.md"
+
+[project.optional-dependencies]
+discord = ["discord.py>=2.3"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "discord.py>=2.3",
+    "ruff>=0.17",
+    "ty>=0.0.89",
+    # tomllib only exists on 3.11+; the packaging test falls back to tomli.
+    "tomli>=2.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/petpet_gif"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/tests",
+    "/examples",
+    "/docs",
+    "/README.md",
+    "/LICENSE",
+    "/NOTICE",
+    "/CHANGELOG.md",
+    "/pyproject.toml",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+# Warnings are failures, except the cache provider's: it builds its scratch
+# directory with mode 0o700, which some sandboxes cannot list again, and a
+# failed *cache* write should never turn a green suite red.
+filterwarnings = ["error", "ignore::pytest.PytestCacheWarning"]
+
+[tool.ty.src]
+# `.uv` is where the sandbox friendly uv cache and tool environments live; it
+# contains third-party sources that are not ours to type check.
+exclude = [".uv"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests", "examples"]
+# `.uv` holds the sandbox friendly uv cache/tool directories; never lint into it.
+extend-exclude = [".uv", "dist"]
+
+[tool.ruff.lint]
+select = [
+    "A",
+    "ARG",
+    "B",
+    "C4",
+    "E",
+    "EM",
+    "F",
+    "FLY",
+    "FURB",
+    "G",
+    "I",
+    "ICN",
+    "ISC",
+    "LOG",
+    "N",
+    "PERF",
+    "PIE",
+    "PTH",
+    "Q",
+    "RET",
+    "RUF",
+    "SIM",
+    "T20",
+    "TID",
+    "UP",
+    "W",
+]
+# EM101/EM102 want every raise to build its message in a variable first, which
+# hurts readability far more than it helps.
+ignore = ["EM101", "EM102"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E501"]
+"examples/*" = ["T20"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["petpet_gif"]

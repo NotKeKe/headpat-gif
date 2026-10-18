@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# uv / tooling
+.uv/
+
+# Build output
+dist/
+build/
+*.whl
+*.tar.gz
+
+# Test and coverage output
+.pytest_cache/
+tests/_tmp/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Examples output
+examples/out/
+
+# Editors / OS
+.idea/
+.vscode/
+Thumbs.db
+desktop.ini
