@@ -11,8 +11,8 @@ reference demo.
 ```python
 from petpet_gif import petpet
 
-gif = petpet("goat.png", duration=2.0)
-gif.save("goat-pet.gif")
+gif = petpet("pet.png", duration=2.0)
+gif.save("pet.gif")
 ```
 
 Everything is swappable: bring your own animated overlay (the thing that appears
@@ -44,33 +44,33 @@ only runtime dependency is Pillow.
 from petpet_gif import petpet, save
 
 # One pat, as long as the overlay takes to play.
-gif = petpet("goat.png")
+gif = petpet("pet.png")
 
 # Two seconds of continuous patting (loop is on by default).
-gif = petpet("goat.png", duration=2.0)
+gif = petpet("pet.png", duration=2.0)
 
 # Two seconds of GIF, patting at double rate.
-gif = petpet("goat.png", duration=2.0, speed=2.0)
+gif = petpet("pet.png", duration=2.0, speed=2.0)
 
 # Pat once and then rest for the remainder of the two seconds.
-gif = petpet("goat.png", duration=2.0, loop=False)
+gif = petpet("pet.png", duration=2.0, loop=False)
 
 # A small hand resting on the head instead of covering the picture.
-gif = petpet("goat.png", overlay_scale=0.4, overlay_anchor="top")
+gif = petpet("pet.png", overlay_scale=0.4, overlay_anchor="top")
 
 # Move the hand: fractions of the canvas. Negative y is up, and the picture
 # grows to fit rather than slicing the hand off.
-gif = petpet("goat.png", overlay_offset=(0.0, -0.3))   # 30% taller, hand complete
-gif = petpet("goat.png", overlay_offset=(0.1, 0.15))   # down and to the right
-gif = petpet("goat.png", overlay_offset=(0.0, 0.5), overlay_scale=0.4)  # bottom third
+gif = petpet("pet.png", overlay_offset=(0.0, -0.3))   # 30% taller, hand complete
+gif = petpet("pet.png", overlay_offset=(0.1, 0.15))   # down and to the right
+gif = petpet("pet.png", overlay_offset=(0.0, 0.5), overlay_scale=0.4)  # bottom third
 
 # Your own overlay: a path, bytes, an open file or a PIL image - GIF or still.
-gif = petpet("goat.png", "heart.gif")
-gif = petpet("goat.png", requests.get(url, timeout=10).content)
+gif = petpet("pet.png", "heart.gif")
+gif = petpet("pet.png", requests.get(url, timeout=10).content)
 
 # Tune the look.
 gif = petpet(
-    "goat.png",
+    "pet.png",
     "heart.gif",
     duration=1.5,
     squash=1.4,                 # harder squash
@@ -78,7 +78,7 @@ gif = petpet(
     overlay_offset=(0.0, -0.05),  # nudge it up a touch
 )
 
-save(gif, "out/goat-pet.gif")   # or: gif.save("out/goat-pet.gif")
+save(gif, "out/pet.gif")   # or: gif.save("out/pet.gif")
 ```
 
 ### Images from anywhere
@@ -87,10 +87,10 @@ save(gif, "out/goat-pet.gif")   # or: gif.save("out/goat-pet.gif")
 
 | Input | Example |
 | --- | --- |
-| Filename / path | `petpet("goat.png")`, `petpet(Path("goat.png"))` |
+| Filename / path | `petpet("pet.png")`, `petpet(Path("pet.png"))` |
 | Raw bytes | `petpet(requests.get(url).content)` |
-| Binary file object | `petpet(open("goat.png", "rb"))`, `petpet(io.BytesIO(data))` |
-| Pillow image | `petpet(Image.open("goat.png"))` |
+| Binary file object | `petpet(open("pet.png", "rb"))`, `petpet(io.BytesIO(data))` |
+| Pillow image | `petpet(Image.open("pet.png"))` |
 
 Animated overlays (GIF, animated WebP, APNG) keep their own frame timing; the
 squash is synchronised to that timeline. A still overlay is shown for

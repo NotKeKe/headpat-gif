@@ -18,12 +18,6 @@ artwork and ports one third-party code path; both are recorded here.
 - If you only need the library, nothing else requires this asset: pass your own
   `overlay=` and it is never touched.
 
-The reference clip this library was modelled on (an animated WebP of a
-Minecraft hand patting a goat, from
-<https://cdn.modrinth.com/data/cached_images/241f2e2d59483053ded36c5fd41ba80a038258bb.webp>)
-is **not** redistributed: it was consulted as a design reference and no copy of
-it is kept in this repository, the wheel or the sdist.
-
 ## Ported code
 
 `src/petpet_gif/_palette.py`

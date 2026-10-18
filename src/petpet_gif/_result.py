@@ -15,7 +15,7 @@ class PetPetGif(io.BytesIO):
     This is a plain :class:`io.BytesIO` subclass, which is exactly what
     ``discord.File`` accepts::
 
-        await channel.send(file=discord.File(petpet("goat.png")))
+        await channel.send(file=discord.File(petpet("pet.png")))
 
     ``discord.File`` validates ``seekable()``/``readable()`` and takes the
     attachment name from the ``name`` attribute, so the object can be sent

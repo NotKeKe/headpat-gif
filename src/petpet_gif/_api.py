@@ -116,8 +116,8 @@ def petpet(
 
     Example:
         >>> from petpet_gif import petpet
-        >>> gif = petpet("goat.png", duration=2.0, speed=1.5)
-        >>> _ = gif.save("goat-pet.gif")
+        >>> gif = petpet("pet.png", duration=2.0, speed=1.5)
+        >>> _ = gif.save("pet.gif")
     """
     _validate(
         duration=duration,

@@ -1,8 +1,8 @@
 """Command line playground: pat any image and write the GIF out.
 
-    uv run python examples/try_yours.py goat.png
-    uv run python examples/try_yours.py goat.png --duration 2 --speed 1.5 --out pat.gif
-    uv run python examples/try_yours.py goat.png --overlay heart.gif --loop
+    uv run python examples/try_yours.py pet.png
+    uv run python examples/try_yours.py pet.png --duration 2 --speed 1.5 --out pat.gif
+    uv run python examples/try_yours.py pet.png --overlay heart.gif --loop
     uv run python examples/try_yours.py            # no argument: uses a built-in shape
 
 With no ``image`` argument it draws a simple stand-in pet, so you can see the

@@ -109,7 +109,7 @@ def test_background_flattens_the_canvas(subject: Image.Image, invisible: Image.I
 
 
 def test_name_reaches_the_attachment(subject: Image.Image) -> None:
-    assert petpet(subject, duration=0.2, name="goat.gif").name == "goat.gif"
+    assert petpet(subject, duration=0.2, name="pet.gif").name == "pet.gif"
     assert petpet(subject, duration=0.2).name == "petpet.gif"
 
 

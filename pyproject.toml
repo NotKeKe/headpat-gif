@@ -9,9 +9,11 @@ description = "Generate \"pet-pet\" GIFs: a hand pats the head of any image whil
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
-license-files = ["LICENSE"]
+# Shipped in dist-info/licenses/ so the third-party notice really travels with
+# an installed copy, not just with the repository.
+license-files = ["LICENSE", "NOTICE"]
 authors = [{ name = "Mark", email = "mark@example.com" }]
-keywords = ["petpet", "pet-pet", "petthe", "pet the", "goat", "gif", "pillow", "discord"]
+keywords = ["petpet", "pet-pet", "petthe", "pet the", "gif", "pillow", "discord"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",

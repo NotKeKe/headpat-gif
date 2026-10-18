@@ -24,7 +24,7 @@ def test_discord_file_accepts_the_result_without_conversion(subject: Image.Image
 
 
 def test_the_filename_can_be_overridden_per_call(subject: Image.Image) -> None:
-    assert discord.File(petpet(subject, duration=0.2, name="goat.gif")).filename == "goat.gif"
+    assert discord.File(petpet(subject, duration=0.2, name="pet.gif")).filename == "pet.gif"
 
 
 def test_an_explicit_filename_still_wins(subject: Image.Image) -> None:

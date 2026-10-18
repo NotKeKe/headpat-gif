@@ -5,11 +5,11 @@ the result comes back as an object you can hand straight to ``discord.File``::
 
     from petpet_gif import petpet
 
-    gif = petpet("goat.png", duration=2.0)
-    gif.save("goat-pet.gif")
+    gif = petpet("pet.png", duration=2.0)
+    gif.save("pet.gif")
 
     # in a discord.py command, without touching the disk:
-    await channel.send(file=discord.File(petpet("goat.png")))
+    await channel.send(file=discord.File(petpet("pet.png")))
 
 Everything is customisable: pass your own animated overlay, change how long the
 GIF runs and how fast the pat plays.
