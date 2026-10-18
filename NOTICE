@@ -18,13 +18,11 @@ artwork and ports one third-party code path; both are recorded here.
 - If you only need the library, nothing else requires this asset: pass your own
   `overlay=` and it is never touched.
 
-`docs/reference/minecraft-goat-petting.webp`
-
-- Source: <https://cdn.modrinth.com/data/cached_images/241f2e2d59483053ded36c5fd41ba80a038258bb.webp>
-- Retrieved: 2026-10-17
-- Properties: 600x300, 13 frames x 30ms animated WebP
-- Role: design reference only (the on-screen behaviour this library reproduces).
-  It is not part of the built wheel or sdist.
+The reference clip this library was modelled on (an animated WebP of a
+Minecraft hand patting a goat, from
+<https://cdn.modrinth.com/data/cached_images/241f2e2d59483053ded36c5fd41ba80a038258bb.webp>)
+is **not** redistributed: it was consulted as a design reference and no copy of
+it is kept in this repository, the wheel or the sdist.
 
 ## Ported code
 
