@@ -21,20 +21,22 @@ jobs:
             python-version: "3.13"
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@v10
         with:
           enable-cache: true
 
       - name: Install the environment
-        run: uv sync --python ${{ matrix.python-version }}
+        run: uv sync --locked --python ${{ matrix.python-version }}
 
+      # `uv run` uses the ruff and ty versions pinned in uv.lock, so a new
+      # release cannot turn CI red on its own.
       - name: Lint
-        run: uvx ruff check .
+        run: uv run ruff check .
 
       - name: Type check
-        run: uvx ty check
+        run: uv run ty check
 
       - name: Test
         run: uv run pytest
