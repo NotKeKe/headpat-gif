@@ -1,0 +1,35 @@
+name: Publish
+
+# Publishing is driven by GitHub Releases: create a release (tag `v0.1.0`, for
+# example) and this builds the artefacts and uploads them to PyPI through
+# Trusted Publishing, so no API token is stored anywhere.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/petpet-gif
+    permissions:
+      # The OIDC token that PyPI exchanges for an upload token.
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: astral-sh/setup-uv@v10.3.0
+        with:
+          # Uploads must never be served from a stale cache.
+          enable-cache: false
+
+      - name: Build
+        run: uv build
+
+      - name: Check the artefacts
+        run: uvx twine check dist/*
+
+      - name: Publish to PyPI
+        run: uv publish --trusted-publishing always

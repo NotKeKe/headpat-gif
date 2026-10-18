@@ -12,7 +12,7 @@ license = "MIT"
 # Shipped in dist-info/licenses/ so the third-party notice really travels with
 # an installed copy, not just with the repository.
 license-files = ["LICENSE", "NOTICE"]
-authors = [{ name = "Mark", email = "mark@example.com" }]
+authors = [{ name = "NotKeKe", email = "149957866+NotKeKe@users.noreply.github.com" }]
 keywords = ["petpet", "pet-pet", "petthe", "pet the", "gif", "pillow", "discord"]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -32,10 +32,10 @@ classifiers = [
 dependencies = ["pillow>=10.0.0"]
 
 [project.urls]
-Homepage = "https://github.com/OWNER/petpet-gif"
-Repository = "https://github.com/OWNER/petpet-gif"
-Issues = "https://github.com/OWNER/petpet-gif/issues"
-Changelog = "https://github.com/OWNER/petpet-gif/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/NotKeKe/petpet-gif"
+Repository = "https://github.com/NotKeKe/petpet-gif"
+Issues = "https://github.com/NotKeKe/petpet-gif/issues"
+Changelog = "https://github.com/NotKeKe/petpet-gif/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 discord = ["discord.py>=2.3"]
