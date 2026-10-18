@@ -201,28 +201,6 @@ needed when working inside a sandbox that cannot write to `%APPDATA%\uv`.
 > `powershell -ExecutionPolicy Bypass -File scripts/check.ps1`, or just run the
 > three commands above directly.
 
-### Publishing
-
-Bump `version` in `pyproject.toml`, note it in `CHANGELOG.md`, then either:
-
-**By hand**, with an API token from <https://pypi.org/manage/account/token/>:
-
-```bash
-uv build                       # dist/headpat_gif-<version>-py3-none-any.whl + sdist
-uvx twine check dist/*         # a README PyPI would reject fails here, not there
-UV_PUBLISH_TOKEN=pypi-... uv publish
-```
-
-**Or with Trusted Publishing**, which stores no token at all: put the metadata
-on [the trusted publisher settings][trusted] (owner, repository, workflow
-`publish.yml`, environment `pypi`), then create a GitHub Release. The
-`.github/workflows/publish.yml` job builds, checks and uploads over OIDC.
-
-A released version can never be replaced on PyPI - only yanked - so every
-change ships as a new version.
-
-[trusted]: https://pypi.org/manage/account/publishing/
-
 ## License
 
 MIT - see [LICENSE](LICENSE). Bundled artwork and ported code are credited in
