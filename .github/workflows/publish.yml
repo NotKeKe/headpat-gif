@@ -15,6 +15,10 @@ jobs:
       name: pypi
       url: https://pypi.org/p/headpat-gif
     permissions:
+      # Declaring any permission drops all the defaults, so contents: read has
+      # to be spelled out - without it actions/checkout cannot read the
+      # repository and fails with "repository not found".
+      contents: read
       # The OIDC token that PyPI exchanges for an upload token.
       id-token: write
     steps:
