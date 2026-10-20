@@ -79,7 +79,13 @@ def test_transparent_pixels_use_index_zero_in_the_encoded_palette(invisible: Ima
 def test_a_hole_inside_the_subject_survives_the_round_trip(invisible: Image.Image) -> None:
     # Canvas is 100x100 and the subject sits at (10, 12)-(90, 92) when at rest,
     # so the hole lands around (42, 44)-(58, 60).
-    gif = petpet(_subject_with_a_hole(), invisible, duration=0.5, max_size=CANVAS)
+    gif = petpet(
+        _subject_with_a_hole(),
+        invisible,
+        duration=0.5,
+        max_size=CANVAS,
+        overlay_offset=(0.0, 0.0),
+    )
     frame = frame_rgba(gif.to_bytes(), 0)
     head = pixel(frame, (CANVAS // 2, CANVAS // 2))
     body = pixel(frame, (20, 20))

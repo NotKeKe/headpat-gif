@@ -6,6 +6,17 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.1b3] - 2026-10-20
+
+### Changed
+
+- `overlay_offset` defaults to `(0.0, -0.15)`. The hand now hangs over the
+  picture - 15% of the canvas above its top edge - instead of starting level with
+  it, and the canvas grows by that amount to keep the hand whole. **The default
+  output is therefore 15% taller than the input's aspect ratio**: a 256x192
+  picture comes back 256x221, a 256x144 one 256x166. Pass
+  `overlay_offset=(0.0, 0.0)` for the old canvas that matched the picture exactly.
+
 ## [0.2.1b2] - 2026-10-20
 
 ### Fixed
@@ -103,7 +114,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   instead of resting after a single pat. Looping now fits a whole number of
   cycles into `duration`, so the infinitely looping GIF has no visible jump.
 
-[Unreleased]: https://github.com/NotKeKe/headpat-gif/compare/v0.2.1b2...HEAD
+[Unreleased]: https://github.com/NotKeKe/headpat-gif/compare/v0.2.1b3...HEAD
+[0.2.1b3]: https://github.com/NotKeKe/headpat-gif/compare/v0.2.1b2...v0.2.1b3
 [0.2.1b2]: https://github.com/NotKeKe/headpat-gif/compare/v0.2.1b1...v0.2.1b2
 [0.2.1b1]: https://github.com/NotKeKe/headpat-gif/compare/v0.2.0...v0.2.1b1
 [0.2.0]: https://github.com/NotKeKe/headpat-gif/compare/v0.1.0...v0.2.0

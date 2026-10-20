@@ -21,6 +21,9 @@ def _boxes(**kwargs) -> list[tuple[int, int, int, int] | None]:
     kwargs.setdefault("duration", 1.0)
     kwargs.setdefault("max_size", CANVAS)
     kwargs.setdefault("static_overlay_ms", 500)
+    # These tests measure the subject inside a canvas the size of the picture, so
+    # they opt out of the default lift that makes the canvas taller.
+    kwargs.setdefault("overlay_offset", (0.0, 0.0))
     gif = petpet(_opaque(), kwargs.pop("overlay"), **kwargs)
     return frame_alpha_boxes(gif.to_bytes())
 
@@ -104,7 +107,14 @@ def test_an_overlay_bigger_than_the_canvas_is_cropped_not_shrunk() -> None:
     # A 200x200 overlay on a 200x25 canvas: it starts in the canvas' own corner
     # and runs off the right and bottom edges, which are cropped.
     for subject in (wide, tall):
-        gif = petpet(subject, square, duration=0.2, max_size=200, overlay_scale=1.0)
+        gif = petpet(
+            subject,
+            square,
+            duration=0.2,
+            max_size=200,
+            overlay_scale=1.0,
+            overlay_offset=(0.0, 0.0),
+        )
         box = frame_alpha_boxes(gif.to_bytes())[0]
 
         assert box is not None
@@ -145,6 +155,7 @@ def test_a_padded_overlay_still_touches_the_corner_it_is_given() -> None:
         max_size=60,
         overlay_scale=0.25,
         overlay_position=(0.5, 0.5),
+        overlay_offset=(0.0, 0.0),
     )
     box = frame_alpha_boxes(gif.to_bytes())[0]
 
@@ -192,14 +203,26 @@ def _sprite_box(
 
 
 def test_the_canvas_keeps_the_subject_aspect_ratio(subject: Image.Image) -> None:
-    assert petpet(subject, duration=0.2).size == (256, 192)
-    assert petpet(subject, duration=0.2, max_size=64).size == (64, 48)
+    assert petpet(subject, duration=0.2, overlay_offset=(0.0, 0.0)).size == (256, 192)
+    assert petpet(subject, duration=0.2, max_size=64, overlay_offset=(0.0, 0.0)).size == (64, 48)
 
 
 def test_a_wide_subject_gets_a_wide_canvas() -> None:
     wide = Image.new("RGBA", (400, 50), (10, 10, 10, 255))
 
-    assert petpet(wide, duration=0.2, max_size=200).size == (200, 25)
+    assert petpet(wide, duration=0.2, max_size=200, overlay_offset=(0.0, 0.0)).size == (200, 25)
+
+
+def test_the_default_lifts_the_hand_above_the_picture(subject: Image.Image) -> None:
+    # The default offset is (0.0, -0.15): the hand hangs over the picture's top
+    # edge and the canvas grows by that much to keep the hand whole, so the
+    # default output is 15% taller than the input's aspect ratio.
+    gif = petpet(subject, duration=0.2)
+    box = frame_alpha_boxes(gif.to_bytes())[0]
+
+    assert gif.size == (256, 221)  # 192 + round(192 * 0.15)
+    assert box is not None
+    assert box[1] == 0  # the hand's visible top edge is the canvas' top edge
 
 
 def test_image_scale_shrinks_the_subject(invisible: Image.Image) -> None:

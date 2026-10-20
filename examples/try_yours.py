@@ -59,17 +59,17 @@ def build_parser() -> argparse.ArgumentParser:
         nargs=2,
         metavar=("X", "Y"),
         default=(0.0, 0.0),
-        help="where the overlay's top-left corner sits on the picture, as "
-        "fractions of its width and height (0 0 = its top-left corner)",
+        help="where the overlay's top-left corner sits on the canvas, as "
+        "fractions of its width and height (0 0 = the corner of the GIF)",
     )
     parser.add_argument(
         "--offset",
         type=float,
         nargs=2,
         metavar=("X", "Y"),
-        default=(0.0, 0.0),
-        help="move the overlay, as a fraction of the canvas; the picture grows "
-        "to fit, so Y=-0.3 makes it 30%% taller",
+        default=(0.0, -0.15),
+        help="move the overlay, as a fraction of the canvas; the canvas grows "
+        "to fit, so Y=-0.3 makes it 30%% taller (0 0 = match the picture)",
     )
     parser.add_argument("--squash", type=float, default=1.0, help="0 disables the squash")
     parser.add_argument("--max-size", type=int, default=256, help="longest side in pixels")

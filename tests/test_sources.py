@@ -103,4 +103,4 @@ def test_exif_rotation_is_applied(work_dir: Path) -> None:
     path = work_dir / "rotated.jpg"
     source.save(path, exif=exif)
 
-    assert petpet(path, duration=0.2, max_size=40).size == (20, 40)
+    assert petpet(path, duration=0.2, max_size=40, overlay_offset=(0.0, 0.0)).size == (20, 40)

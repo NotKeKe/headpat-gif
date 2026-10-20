@@ -29,6 +29,11 @@ __all__ = ["petpet", "save"]
 DEFAULT_STATIC_OVERLAY_MS = 500
 #: How much of the cover fit the overlay is drawn at when the caller says nothing.
 DEFAULT_OVERLAY_SCALE = 0.8
+#: Where the overlay sits by default: lifted a sixth of the canvas above the
+#: picture's top edge, so the hand hangs over the picture instead of starting
+#: level with it. The canvas grows to keep the whole hand, which is why the
+#: default output is taller than the input's aspect ratio.
+DEFAULT_OVERLAY_OFFSET = (0.0, -0.15)
 
 ColorLike = str | tuple[int, int, int] | tuple[int, int, int, int]
 
@@ -45,7 +50,7 @@ def petpet(
     image_scale: float = 0.8,
     squash: float = 1.0,
     overlay_scale: float | None = DEFAULT_OVERLAY_SCALE,
-    overlay_offset: tuple[float, float] = (0.0, 0.0),
+    overlay_offset: tuple[float, float] = DEFAULT_OVERLAY_OFFSET,
     overlay_position: tuple[float, float] = (0.0, 0.0),
     static_overlay_ms: int = DEFAULT_STATIC_OVERLAY_MS,
     background: ColorLike | None = None,
@@ -92,7 +97,11 @@ def petpet(
             the right. Overlay that the offset moves past an edge grows the
             canvas to keep it visible, so pushing the hand up makes the returned
             image taller (``gif.size`` reflects that) while the subject keeps its
-            size and its place near the bottom.
+            size and its place near the bottom. The default, ``(0.0, -0.15)``,
+            lifts the hand so it hangs over the picture rather than starting level
+            with it - which is why the default output is 15% taller than the
+            input's aspect ratio. Pass ``(0.0, 0.0)`` for a canvas that matches
+            the picture exactly.
         overlay_position: The spot the overlay's visible top-left corner is pinned
             to, as a fraction of the canvas: ``(0.0, 0.0)`` (the default) is the
             canvas' own corner - the corner of the finished GIF, so the overlay

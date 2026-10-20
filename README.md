@@ -66,9 +66,12 @@ gif = petpet("pet.png", overlay_position=(0.5, 0.0))    # top edge, centred
 gif = petpet("pet.png", overlay_position=(0.0, 0.5))    # half way down the left side
 
 # Nudge the hand. Fractions of the canvas; negative y is up. The canvas grows
-# by whatever the nudge displaces, so the hand is never sliced off.
+# by whatever the nudge displaces, so the hand is never sliced off. The default
+# is (0.0, -0.15): the hand hangs 15% of the canvas above the picture, and the
+# output is that much taller.
 gif = petpet("pet.png", overlay_offset=(0.0, -0.3))   # 30% taller, hand complete
 gif = petpet("pet.png", overlay_offset=(0.1, 0.15))   # down and to the right
+gif = petpet("pet.png", overlay_offset=(0.0, 0.0))    # canvas matches the picture
 
 # Your own overlay: a path, bytes, an open file or a PIL image - GIF or still.
 gif = petpet("pet.png", "heart.gif")
@@ -118,7 +121,7 @@ squash is synchronised to that timeline. A still overlay is shown for
 | `image_scale` | `0.8` | Subject size inside the canvas once it is back to normal. |
 | `squash` | `1.0` | Squash strength. `0` disables it, `1` matches the reference. |
 | `overlay_scale` | `0.8` | The overlay is always scaled **uniformly**: the factor comes from whichever canvas axis asks for the bigger one, so it covers the picture without distorting and a portrait hand stays a portrait hand. `1.0` is that full cover fit; the default `0.8` leaves a little of the picture showing, and `0.3` is a small hand. |
-| `overlay_offset` | `(0.0, 0.0)` | Moves the overlay, as a fraction of the canvas: `(0.0, -0.2)` up, `(0.1, 0.0)` right. The canvas grows by whatever the nudge displaces, so the hand is not sliced off. |
+| `overlay_offset` | `(0.0, -0.15)` | Moves the overlay, as a fraction of the canvas: negative y is up, `(0.1, 0.0)` is right. The canvas grows by whatever the nudge displaces, so the hand is not sliced off. The default lifts the hand 15% above the picture's top edge - that is why the default output is 15% taller than the input's aspect ratio. Pass `(0.0, 0.0)` for a canvas that matches the picture exactly. |
 | `overlay_position` | `(0.0, 0.0)` | Where the overlay hangs from: the fraction of the **canvas** that its visible top-left corner is pinned to. `(0.0, 0.0)` is the canvas' top-left corner - the corner of the finished GIF, so the overlay touches the left and top edges - `(0.5, 0.5)` its middle, `(1.0, 1.0)` its bottom-right. |
 | `static_overlay_ms` | `500` | Cycle length when `overlay` is a still image. |
 | `background` | `None` | Colour to flatten transparency onto, e.g. `"white"`. |
