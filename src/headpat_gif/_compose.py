@@ -202,18 +202,31 @@ def _squeeze_at(progress: float) -> float:
     return 1.0 - abs(2.0 * min(max(progress, 0.0), 1.0) - 1.0)
 
 
-def _visible_bottom_ratio(overlay: Sequence[tuple[PILImage, int]]) -> float:
-    """Bottom edge of the visible overlay, as a fraction of its own height.
+def _visible_origin(overlay: Sequence[tuple[PILImage, int]]) -> tuple[float, float]:
+    """Top-left corner of the overlay's visible pixels, as a fraction of its frame.
 
-    Measured across every frame and taking the lowest one, so an overlay whose
-    hand travels downwards does not make the picture jitter vertically.
+    Measured across every frame and taking the corner that reaches furthest out,
+    so an overlay whose hand travels downwards does not make the picture jitter.
+    The bundled hand has a few empty rows above it, and aligning the *frame*
+    instead of the pixels would leave a gap between the hand and the edge it is
+    meant to touch.
     """
-    bottoms = []
-    for frame, _ in overlay:
-        bbox = frame.getchannel("A").getbbox()
-        if bbox is not None:
-            bottoms.append(bbox[3] / frame.height)
-    return max(bottoms) if bottoms else 1.0
+    boxes = [frame.getchannel("A").getbbox() for frame, _ in overlay]
+    visible = [box for box in boxes if box is not None]
+    if not visible:
+        return (0.0, 0.0)
+    first = overlay[0][0]
+    return (
+        min(box[0] for box in visible) / first.width,
+        min(box[1] for box in visible) / first.height,
+    )
+
+
+def _picture_box(box: tuple[int, int], image_scale: float) -> tuple[int, int, int, int]:
+    """Where the subject sits at rest: left, top, width, height in canvas pixels."""
+    width = max(1, round(box[0] * image_scale))
+    height = max(1, round(box[1] * image_scale))
+    return (box[0] - width) // 2, round(box[1] * BOTTOM_ANCHOR) - height, width, height
 
 
 def _overlay_placements(
@@ -222,24 +235,27 @@ def _overlay_placements(
     *,
     overlay_scale: float | None,
     overlay_offset: tuple[float, float],
-    overlay_bottom: float,
-    bottom_ratio: float,
+    overlay_position: tuple[float, float],
+    origin: tuple[float, float],
+    picture: tuple[int, int, int, int],
 ) -> list[tuple[int, int, int, int]]:
     """Where each overlay frame is drawn in the un-grown canvas: left, top, w, h.
 
-    ``overlay_bottom`` places the **bottom edge of the visible overlay** at that
-    fraction of the canvas height, so a hand is positioned by where it lands
-    rather than by where its (possibly padded) frame happens to start.
+    ``overlay_position`` is the spot on the *picture* that the overlay's visible
+    top-left corner is pinned to, as a fraction of the picture's own width and
+    height: ``(0.0, 0.0)`` is its top-left corner, ``(1.0, 1.0)`` its bottom-right
+    one. Positioning against the picture rather than the canvas means "flush with
+    the corner" stays true whatever margin ``image_scale`` leaves around it.
     """
+    left = picture[0] + round(overlay_position[0] * picture[2])
+    top = picture[1] + round(overlay_position[1] * picture[3])
     placements = []
     for frame, _ in overlay:
         width, height = overlay_sprite_size(frame, box, overlay_scale)
         placements.append(
             (
-                round((box[0] - width) / 2 + overlay_offset[0] * box[0]),
-                round(overlay_bottom * box[1])
-                - round(bottom_ratio * height)
-                + round(overlay_offset[1] * box[1]),
+                left - round(origin[0] * width) + round(overlay_offset[0] * box[0]),
+                top - round(origin[1] * height) + round(overlay_offset[1] * box[1]),
                 width,
                 height,
             )
@@ -269,37 +285,40 @@ def render_frames(
     squash: float,
     overlay_scale: float | None,
     overlay_offset: tuple[float, float],
-    overlay_bottom: float,
+    overlay_position: tuple[float, float],
     background: RGBA | None = None,
 ) -> tuple[list[PILImage], tuple[int, int]]:
     """Render every frame, and report the canvas size they ended up needing.
 
     The canvas is the size of the subject. Overlay that reaches past an edge is
-    simply cropped - a hand coming down from above is *meant* to run off the top
-    - except when ``overlay_offset`` is what moved it there: then the canvas
-    grows by exactly the displacement, so nudging the hand still never slices it
-    off. The subject keeps its size and its place relative to the bottom.
+    simply cropped - a hand resting on the picture's corner runs off the canvas
+    by design - except when ``overlay_offset`` is what moved it there: then the
+    canvas grows by exactly the displacement, so nudging the hand still never
+    slices it off. The subject keeps its size and its place near the bottom.
     """
     box = canvas_size_for(base, max_size)
-    bottom_ratio = _visible_bottom_ratio(overlay)
+    origin = _visible_origin(overlay)
+    picture = _picture_box(box, image_scale)
     moved = _overlay_placements(
         overlay,
         box,
         overlay_scale=overlay_scale,
         overlay_offset=overlay_offset,
-        overlay_bottom=overlay_bottom,
-        bottom_ratio=bottom_ratio,
+        overlay_position=overlay_position,
+        origin=origin,
+        picture=picture,
     )
     natural = _overlay_placements(
         overlay,
         box,
         overlay_scale=overlay_scale,
         overlay_offset=(0.0, 0.0),
-        overlay_bottom=overlay_bottom,
-        bottom_ratio=bottom_ratio,
+        overlay_position=overlay_position,
+        origin=origin,
+        picture=picture,
     )
     # The canvas grows by the *displacement* the offset caused, not by however
-    # far the cover fit already reaches past the edge.
+    # far the overlay already reaches past the edge on its own.
     natural_overflow = _overflow(natural, box)
     moved_overflow = _overflow(moved, box)
     extra = [

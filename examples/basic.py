@@ -35,16 +35,19 @@ def main() -> None:
     save(petpet(pet, duration=1.5, squash=0.0), OUT / "06-no-squash.gif")
     save(petpet(pet, duration=1.5, background="white"), OUT / "07-white-background.gif")
     save(
-        petpet(pet, duration=1.5, overlay_bottom=0.7),
-        OUT / "08-hand-lands-higher.gif",
+        petpet(pet, duration=1.5, overlay_position=(0.0, 0.3)),
+        OUT / "08-hand-hangs-lower.gif",
     )
 
-    # A caller supplied overlay: a big transparent canvas with a small heart in
-    # the top left corner, which is how the upstream project expects overlays.
+    # A caller supplied overlay: a transparent canvas with a small heart on it -
+    # only the visible pixels are aligned, so the padding does not matter.
     canvas = Image.new("RGBA", (240, 180), (0, 0, 0, 0))
     heart = Image.new("RGBA", (60, 60), (255, 70, 120, 255))
     canvas.paste(heart, (60, 10))
-    save(petpet(pet, canvas, duration=1.5, overlay_scale=1.0), OUT / "09-custom-overlay.gif")
+    save(
+        petpet(pet, canvas, duration=1.5, overlay_scale=0.5, overlay_position=(0.5, 0.0)),
+        OUT / "09-custom-overlay.gif",
+    )
 
     print(f"wrote {len(list(OUT.glob('*.gif')))} GIFs to {OUT}")
 

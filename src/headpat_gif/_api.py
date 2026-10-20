@@ -27,6 +27,8 @@ __all__ = ["petpet", "save"]
 
 #: Delay used for one cycle when the overlay is a still image.
 DEFAULT_STATIC_OVERLAY_MS = 500
+#: How much of the cover fit the overlay is drawn at when the caller says nothing.
+DEFAULT_OVERLAY_SCALE = 0.8
 
 ColorLike = str | tuple[int, int, int] | tuple[int, int, int, int]
 
@@ -42,9 +44,9 @@ def petpet(
     max_size: int = 256,
     image_scale: float = 0.8,
     squash: float = 1.0,
-    overlay_scale: float | None = None,
+    overlay_scale: float | None = DEFAULT_OVERLAY_SCALE,
     overlay_offset: tuple[float, float] = (0.0, 0.0),
-    overlay_bottom: float = 1.0,
+    overlay_position: tuple[float, float] = (0.0, 0.0),
     static_overlay_ms: int = DEFAULT_STATIC_OVERLAY_MS,
     background: ColorLike | None = None,
     name: str = "petpet.gif",
@@ -80,20 +82,23 @@ def petpet(
             ``1`` matches the amplitude of the reference implementation.
         overlay_scale: Size of the overlay. The overlay is always scaled
             **uniformly**, by whichever of the canvas' two dimensions asks for the
-            bigger factor, so it covers the picture without being stretched on a
-            wide or tall image. ``None`` (the default) uses that cover fit as-is;
-            a number multiplies it, e.g. ``0.5`` for a hand half that size.
+            bigger factor, so it keeps its shape on a wide or tall image. The
+            default (``0.8``) draws it at 80% of that cover fit, big enough to
+            dominate the picture without burying it; ``None`` or ``1.0`` is the
+            full cover fit, and a small value puts the hand down on the picture's
+            corner instead.
         overlay_offset: Moves the overlay, as a fraction of the canvas:
             ``(0.0, -0.3)`` pushes it up by 30% of the height, ``(0.1, 0.0)`` to
             the right. Overlay that the offset moves past an edge grows the
             canvas to keep it visible, so pushing the hand up makes the returned
             image taller (``gif.size`` reflects that) while the subject keeps its
             size and its place near the bottom.
-        overlay_bottom: Where the **bottom edge of the visible overlay** sits, as
-            a fraction of the canvas height. ``1.0`` (the default) puts it on the
-            bottom edge; ``0.5`` centres the hand's landing point on the picture.
-            This is what positions the hand, rather than an anchor on its
-            (possibly padded) frame.
+        overlay_position: The spot on the picture that the overlay's visible
+            top-left corner is pinned to, as a fraction of the picture's own width
+            and height. ``(0.0, 0.0)`` (the default) is the picture's top-left
+            corner, ``(0.5, 0.5)`` its middle, ``(1.0, 1.0)`` its bottom-right
+            corner. The overlay is *not* clipped to the picture here: anything it
+            puts past the canvas edge is cropped instead.
         static_overlay_ms: Cycle length used when ``overlay`` is not animated.
         background: Colour to flatten transparency onto, e.g. ``"white"`` or
             ``(255, 255, 255)``. ``None`` keeps the canvas transparent.
@@ -121,7 +126,7 @@ def petpet(
         image_scale=image_scale,
         squash=squash,
         overlay_scale=overlay_scale,
-        overlay_bottom=overlay_bottom,
+        overlay_position=overlay_position,
         static_overlay_ms=static_overlay_ms,
     )
 
@@ -151,7 +156,7 @@ def petpet(
         squash=squash,
         overlay_scale=overlay_scale,
         overlay_offset=overlay_offset,
-        overlay_bottom=overlay_bottom,
+        overlay_position=overlay_position,
         background=_background_rgba(background),
     )
 
@@ -219,7 +224,7 @@ def _validate(
     image_scale: float,
     squash: float,
     overlay_scale: float | None,
-    overlay_bottom: float,
+    overlay_position: tuple[float, float],
     static_overlay_ms: int,
 ) -> None:
     if duration is not None and duration <= 0:
@@ -236,8 +241,11 @@ def _validate(
         raise ValueError(f"squash must not be negative, got {squash!r}")
     if overlay_scale is not None and overlay_scale <= 0:
         raise ValueError(f"overlay_scale must be greater than 0, got {overlay_scale!r}")
-    if not math.isfinite(overlay_bottom):
-        raise ValueError(f"overlay_bottom must be a finite number, got {overlay_bottom!r}")
+    for axis, value in zip("xy", overlay_position, strict=True):
+        if not math.isfinite(value):
+            raise ValueError(
+                f"overlay_position {axis} must be a finite number, got {value!r}"
+            )
     if static_overlay_ms < MIN_DELAY_MS:
         raise ValueError(
             f"static_overlay_ms must be at least {MIN_DELAY_MS}, got {static_overlay_ms!r}"

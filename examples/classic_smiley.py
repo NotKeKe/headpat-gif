@@ -1,7 +1,7 @@
-"""The classic look: a big hand covers the picture and squashes the subject.
+"""The classic look: a big hand on the picture, the subject squashing under it.
 
-This is what ``petpet()`` does out of the box - the overlay is authored for the
-canvas, so it covers the whole picture and the subject squashes underneath it.
+This is what ``petpet()`` does out of the box - the overlay is drawn at 80% of the
+fit that covers the picture, pinned to the picture's top-left corner.
 
     uv run python examples/classic_smiley.py
 """
@@ -33,7 +33,7 @@ def main() -> None:
     face = smiley()
     face.save(OUT / "smiley-input.png")
 
-    # Default: the hand covers the whole picture.
+    # Default: the hand sits on the picture's top-left corner.
     save(petpet(face, duration=1.0), OUT / "smiley.gif")
 
     # Move the hand around: fractions of the canvas, negative y is up. The
@@ -44,9 +44,9 @@ def main() -> None:
     save(petpet(face, duration=1.0, overlay_offset=(0.15, 0.0)), OUT / "smiley-hand-right.gif")
 
     # Shrink the overlay when you want a small hand resting on the head instead;
-    # overlay_bottom then says where that smaller hand lands.
+    # overlay_position then says which spot on the picture it hangs from.
     save(
-        petpet(face, duration=1.5, overlay_scale=0.4, overlay_bottom=0.45),
+        petpet(face, duration=1.5, overlay_scale=0.4, overlay_position=(0.35, 0.25)),
         OUT / "smiley-small-hand.gif",
     )
 

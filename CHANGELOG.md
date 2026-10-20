@@ -6,6 +6,21 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.1b1] - 2026-10-20
+
+### Changed
+
+- The overlay is drawn at 80% of the cover fit by default (`overlay_scale` is now
+  `0.8` instead of `None`), which leaves more of the picture visible than the
+  full cover fit while keeping the "a hand is patting this" read.
+- **Breaking:** the overlay is pinned to the picture's top-left corner by
+  default instead of hanging from its bottom edge. `overlay_bottom` is gone and
+  `overlay_position` replaces it: the fraction of the *picture's* width and
+  height where the overlay's visible top-left corner sits, `(0.0, 0.0)` (the
+  default) being that corner itself. Positioning against the picture rather than
+  the canvas keeps "flush with the corner" true whatever margin `image_scale`
+  leaves around the picture.
+
 ## [0.2.0] - 2026-10-20
 
 ### Fixed
@@ -74,6 +89,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   instead of resting after a single pat. Looping now fits a whole number of
   cycles into `duration`, so the infinitely looping GIF has no visible jump.
 
-[Unreleased]: https://github.com/NotKeKe/headpat-gif/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/NotKeKe/headpat-gif/compare/v0.2.1b1...HEAD
+[0.2.1b1]: https://github.com/NotKeKe/headpat-gif/compare/v0.2.0...v0.2.1b1
 [0.2.0]: https://github.com/NotKeKe/headpat-gif/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/NotKeKe/headpat-gif/releases/tag/v0.1.0

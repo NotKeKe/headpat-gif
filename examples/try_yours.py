@@ -49,16 +49,18 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--scale",
         type=float,
-        default=None,
-        help="shrink the overlay, e.g. 0.4 for a small hand on the head "
-        "(default: cover the whole picture)",
+        default=0.8,
+        help="size of the overlay: a multiple of the fit that covers the picture "
+        "(0.8 = the default, 1.0 = it covers everything, 0.3 = a small hand)",
     )
     parser.add_argument(
-        "--bottom",
+        "--position",
         type=float,
-        default=1.0,
-        help="where the bottom edge of the hand lands, as a fraction of the height "
-        "(1.0 = bottom of the picture, 0.5 = half way up)",
+        nargs=2,
+        metavar=("X", "Y"),
+        default=(0.0, 0.0),
+        help="where the overlay's top-left corner sits on the picture, as "
+        "fractions of its width and height (0 0 = its top-left corner)",
     )
     parser.add_argument(
         "--offset",
@@ -88,7 +90,7 @@ def main() -> None:
         squash=args.squash,
         max_size=args.max_size,
         overlay_scale=args.scale,
-        overlay_bottom=args.bottom,
+        overlay_position=tuple(args.position),
         overlay_offset=tuple(args.offset),
         name=args.name,
     )
