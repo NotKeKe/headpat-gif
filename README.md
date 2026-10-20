@@ -58,8 +58,9 @@ gif = petpet("pet.png", duration=2.0, loop=False)
 # A small hand resting on the head instead of filling the picture.
 gif = petpet("pet.png", overlay_scale=0.4, overlay_position=(0.35, 0.2))
 
-# Where the hand hangs from: the fraction of the picture its visible top-left
-# corner is pinned to. (0, 0) - the default - is the picture's own corner.
+# Where the overlay hangs from: the fraction of the GIF its visible top-left
+# corner is pinned to. (0, 0) - the default - is the GIF's own corner, so the
+# hand touches the left and top edges.
 gif = petpet("pet.png", overlay_position=(0.0, 0.0))    # flush with the corner
 gif = petpet("pet.png", overlay_position=(0.5, 0.0))    # top edge, centred
 gif = petpet("pet.png", overlay_position=(0.0, 0.5))    # half way down the left side
@@ -118,7 +119,7 @@ squash is synchronised to that timeline. A still overlay is shown for
 | `squash` | `1.0` | Squash strength. `0` disables it, `1` matches the reference. |
 | `overlay_scale` | `0.8` | The overlay is always scaled **uniformly**: the factor comes from whichever canvas axis asks for the bigger one, so it covers the picture without distorting and a portrait hand stays a portrait hand. `1.0` is that full cover fit; the default `0.8` leaves a little of the picture showing, and `0.3` is a small hand. |
 | `overlay_offset` | `(0.0, 0.0)` | Moves the overlay, as a fraction of the canvas: `(0.0, -0.2)` up, `(0.1, 0.0)` right. The canvas grows by whatever the nudge displaces, so the hand is not sliced off. |
-| `overlay_position` | `(0.0, 0.0)` | Where the overlay hangs from: the fraction of the **picture's** width and height that its visible top-left corner is pinned to. `(0.0, 0.0)` is the picture's top-left corner, `(0.5, 0.5)` its middle, `(1.0, 1.0)` its bottom-right. |
+| `overlay_position` | `(0.0, 0.0)` | Where the overlay hangs from: the fraction of the **canvas** that its visible top-left corner is pinned to. `(0.0, 0.0)` is the canvas' top-left corner - the corner of the finished GIF, so the overlay touches the left and top edges - `(0.5, 0.5)` its middle, `(1.0, 1.0)` its bottom-right. |
 | `static_overlay_ms` | `500` | Cycle length when `overlay` is a still image. |
 | `background` | `None` | Colour to flatten transparency onto, e.g. `"white"`. |
 | `name` | `"petpet.gif"` | Filename reported to Discord. |
@@ -170,8 +171,8 @@ Module level convenience wrapper around `PetPetGif.save`.
    whichever canvas axis asks for the bigger one, then multiplied by
    `overlay_scale` (0.8 by default). Its visible top-left corner - measured from
    the alpha channel, so a padded GIF does not leave a gap - is pinned to
-   `overlay_position` of the picture, `(0.0, 0.0)` being the picture's own
-   corner. Anything the overlay puts past the canvas edge is cropped.
+   `overlay_position` of the canvas, `(0.0, 0.0)` being the corner of the
+   finished GIF. Anything the overlay puts past the canvas edge is cropped.
 4. Every frame is converted to palette mode with a dedicated transparent index
    and saved with `disposal=3` ("restore to previous"). Without the palette step
    Pillow writes black boxes around transparent areas; with disposal 2 instead

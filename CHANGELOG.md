@@ -6,6 +6,20 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.1b2] - 2026-10-20
+
+### Fixed
+
+- `overlay_position` is measured against the **canvas**, not the picture inside
+  it. `0.2.1b1` pinned the overlay to the subject's box, which `image_scale`
+  insets by 10% on each side, so the default `(0.0, 0.0)` still left a transparent
+  strip along the left edge of the finished GIF: the hand started at x=25 of 256
+  instead of x=0. `(0.0, 0.0)` now puts the overlay in the corner of the GIF
+  itself, so it touches the left and top edges, which is what "flush with the
+  corner" means when you look at the output.
+- `overlay_position=(1.0, 1.0)` now means the canvas' bottom-right corner, and a
+  full cover fit (`overlay_scale=1.0`) once again covers the whole canvas.
+
 ## [0.2.1b1] - 2026-10-20
 
 ### Changed
@@ -89,7 +103,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   instead of resting after a single pat. Looping now fits a whole number of
   cycles into `duration`, so the infinitely looping GIF has no visible jump.
 
-[Unreleased]: https://github.com/NotKeKe/headpat-gif/compare/v0.2.1b1...HEAD
+[Unreleased]: https://github.com/NotKeKe/headpat-gif/compare/v0.2.1b2...HEAD
+[0.2.1b2]: https://github.com/NotKeKe/headpat-gif/compare/v0.2.1b1...v0.2.1b2
 [0.2.1b1]: https://github.com/NotKeKe/headpat-gif/compare/v0.2.0...v0.2.1b1
 [0.2.0]: https://github.com/NotKeKe/headpat-gif/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/NotKeKe/headpat-gif/releases/tag/v0.1.0

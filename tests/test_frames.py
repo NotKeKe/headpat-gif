@@ -7,7 +7,7 @@ from PIL import Image
 
 from headpat_gif import petpet
 from headpat_gif._compose import overlay_sprite_size
-from support import frame_alpha_boxes
+from support import frame_alpha_boxes, frame_rgba, pixel
 
 CANVAS = 100
 BOTTOM = 92  # BOTTOM_ANCHOR (0.92) of a 100px canvas
@@ -72,7 +72,7 @@ def test_the_overlay_is_gone_once_the_cycle_has_played() -> None:
     assert boxes[-1] is None  # ...and gone while the subject rests
 
 
-def test_the_overlay_covers_the_picture_at_full_scale() -> None:
+def test_the_overlay_covers_the_canvas_at_full_scale() -> None:
     # overlay_scale=1.0 is the cover fit itself: the hand is as big as the canvas
     # and only its overflow past the far edges is cropped.
     transparent = Image.new("RGBA", (60, 60), (0, 0, 0, 0))
@@ -81,7 +81,7 @@ def test_the_overlay_covers_the_picture_at_full_scale() -> None:
         transparent, square, duration=0.2, static_overlay_ms=200, max_size=60, overlay_scale=1.0
     )
 
-    assert frame_alpha_boxes(gif.to_bytes())[0] == (6, 7, 60, 60)
+    assert frame_alpha_boxes(gif.to_bytes())[0] == (0, 0, 60, 60)
 
 
 def test_the_overlay_is_scaled_uniformly_whatever_the_canvas_shape() -> None:
@@ -96,38 +96,40 @@ def test_the_overlay_is_scaled_uniformly_whatever_the_canvas_shape() -> None:
         assert height >= box[1] - 1
 
 
-def test_an_overlay_bigger_than_the_picture_is_cropped_not_shrunk() -> None:
+def test_an_overlay_bigger_than_the_canvas_is_cropped_not_shrunk() -> None:
     square = Image.new("RGBA", (20, 20), (0, 200, 0, 255))
     wide = Image.new("RGBA", (400, 50), (10, 10, 10, 255))
     tall = Image.new("RGBA", (50, 400), (10, 10, 10, 255))
 
-    # A 200x200 overlay on a 200x25 canvas: it starts on the picture's top-left
-    # corner and runs off the right and bottom edges, which are cropped.
-    for subject, corner in ((wide, (20, 3)), (tall, (2, 24))):
+    # A 200x200 overlay on a 200x25 canvas: it starts in the canvas' own corner
+    # and runs off the right and bottom edges, which are cropped.
+    for subject in (wide, tall):
         gif = petpet(subject, square, duration=0.2, max_size=200, overlay_scale=1.0)
         box = frame_alpha_boxes(gif.to_bytes())[0]
 
         assert box is not None
         assert gif.size in {(200, 25), (25, 200)}
-        assert box == (*corner, gif.size[0], gif.size[1])
+        assert box == (0, 0, gif.size[0], gif.size[1])
 
 
-def test_the_overlay_sits_on_the_pictures_top_left_corner_by_default() -> None:
-    # 60px canvas, image_scale 0.8: the picture is 48x48 at (6, 7). A 20x20
-    # overlay covers the canvas (factor 3) and the default 0.8 draws it at 48x48.
+def test_the_overlay_reaches_the_canvas_edges_by_default() -> None:
+    # 60px canvas: a 20x20 overlay covers it (factor 3), so the default 0.8 draws
+    # it at 48x48 from the very corner. Nothing is left transparent on the left.
     transparent = Image.new("RGBA", (60, 60), (0, 0, 0, 0))
     square = Image.new("RGBA", (20, 20), (0, 200, 0, 255))
     gif = petpet(transparent, square, duration=0.2, static_overlay_ms=200, max_size=60)
+    frame = frame_rgba(gif.to_bytes(), 0)
 
-    assert frame_alpha_boxes(gif.to_bytes())[0] == (6, 7, 54, 55)
+    assert frame_alpha_boxes(gif.to_bytes())[0] == (0, 0, 48, 48)
+    assert pixel(frame, (0, 0))[3] == 255  # the hand touches the top-left corner
 
 
 def test_the_overlay_position_places_the_hand() -> None:
     # A quarter-size overlay on a 60px canvas: its top-left corner lands on the
-    # spot asked for, measured across the picture rather than the canvas.
-    assert _sprite_box((0.0, 0.0)) == (6, 7, 21, 22)  # the picture's corner
-    assert _sprite_box((0.5, 0.5)) == (30, 31, 45, 46)  # its middle
-    assert _sprite_box((0.25, 0.75)) == (18, 43, 33, 58)
+    # fraction of the canvas asked for.
+    assert _sprite_box((0.0, 0.0)) == (0, 0, 15, 15)  # the canvas' corner
+    assert _sprite_box((0.5, 0.5)) == (30, 30, 45, 45)  # its middle
+    assert _sprite_box((0.25, 0.75)) == (15, 45, 30, 60)
 
 
 def test_a_padded_overlay_still_touches_the_corner_it_is_given() -> None:
@@ -142,17 +144,18 @@ def test_a_padded_overlay_still_touches_the_corner_it_is_given() -> None:
         static_overlay_ms=200,
         max_size=60,
         overlay_scale=0.25,
+        overlay_position=(0.5, 0.5),
     )
     box = frame_alpha_boxes(gif.to_bytes())[0]
 
     assert box is not None
-    assert abs(box[0] - 6) <= 1  # the picture's left edge
-    assert abs(box[1] - 7) <= 1  # ...and its top edge
+    assert abs(box[0] - 30) <= 2  # the middle of the canvas, not 4px right of it
+    assert abs(box[1] - 30) <= 2
 
 
 def test_the_overlay_offset_nudges_the_positioned_hand() -> None:
     # Pushed left by a quarter of the canvas: the object grows to keep it whole.
-    assert _sprite_box((0.0, 0.0), offset=(-0.25, 0.25), size=(69, 60)) == (0, 22, 15, 37)
+    assert _sprite_box((0.0, 0.0), offset=(-0.25, 0.25), size=(75, 60)) == (0, 15, 15, 30)
 
 
 def test_a_non_finite_overlay_position_is_rejected() -> None:

@@ -222,13 +222,6 @@ def _visible_origin(overlay: Sequence[tuple[PILImage, int]]) -> tuple[float, flo
     )
 
 
-def _picture_box(box: tuple[int, int], image_scale: float) -> tuple[int, int, int, int]:
-    """Where the subject sits at rest: left, top, width, height in canvas pixels."""
-    width = max(1, round(box[0] * image_scale))
-    height = max(1, round(box[1] * image_scale))
-    return (box[0] - width) // 2, round(box[1] * BOTTOM_ANCHOR) - height, width, height
-
-
 def _overlay_placements(
     overlay: Sequence[tuple[PILImage, int]],
     box: tuple[int, int],
@@ -237,18 +230,16 @@ def _overlay_placements(
     overlay_offset: tuple[float, float],
     overlay_position: tuple[float, float],
     origin: tuple[float, float],
-    picture: tuple[int, int, int, int],
 ) -> list[tuple[int, int, int, int]]:
     """Where each overlay frame is drawn in the un-grown canvas: left, top, w, h.
 
-    ``overlay_position`` is the spot on the *picture* that the overlay's visible
-    top-left corner is pinned to, as a fraction of the picture's own width and
-    height: ``(0.0, 0.0)`` is its top-left corner, ``(1.0, 1.0)`` its bottom-right
-    one. Positioning against the picture rather than the canvas means "flush with
-    the corner" stays true whatever margin ``image_scale`` leaves around it.
+    ``overlay_position`` is the spot the overlay's visible top-left corner is
+    pinned to, as a fraction of the canvas: ``(0.0, 0.0)`` is the canvas' own
+    corner, which is the corner of the finished GIF - not of the picture inside
+    it, because ``image_scale`` leaves a margin around that.
     """
-    left = picture[0] + round(overlay_position[0] * picture[2])
-    top = picture[1] + round(overlay_position[1] * picture[3])
+    left = round(overlay_position[0] * box[0])
+    top = round(overlay_position[1] * box[1])
     placements = []
     for frame, _ in overlay:
         width, height = overlay_sprite_size(frame, box, overlay_scale)
@@ -291,14 +282,13 @@ def render_frames(
     """Render every frame, and report the canvas size they ended up needing.
 
     The canvas is the size of the subject. Overlay that reaches past an edge is
-    simply cropped - a hand resting on the picture's corner runs off the canvas
-    by design - except when ``overlay_offset`` is what moved it there: then the
-    canvas grows by exactly the displacement, so nudging the hand still never
-    slices it off. The subject keeps its size and its place near the bottom.
+    simply cropped - a hand pinned to the canvas' corner runs off it by design -
+    except when ``overlay_offset`` is what moved it there: then the canvas grows
+    by exactly the displacement, so nudging the hand still never slices it off.
+    The subject keeps its size and its place near the bottom.
     """
     box = canvas_size_for(base, max_size)
     origin = _visible_origin(overlay)
-    picture = _picture_box(box, image_scale)
     moved = _overlay_placements(
         overlay,
         box,
@@ -306,7 +296,6 @@ def render_frames(
         overlay_offset=overlay_offset,
         overlay_position=overlay_position,
         origin=origin,
-        picture=picture,
     )
     natural = _overlay_placements(
         overlay,
@@ -315,7 +304,6 @@ def render_frames(
         overlay_offset=(0.0, 0.0),
         overlay_position=overlay_position,
         origin=origin,
-        picture=picture,
     )
     # The canvas grows by the *displacement* the offset caused, not by however
     # far the overlay already reaches past the edge on its own.

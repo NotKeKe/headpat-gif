@@ -85,20 +85,20 @@ def petpet(
             bigger factor, so it keeps its shape on a wide or tall image. The
             default (``0.8``) draws it at 80% of that cover fit, big enough to
             dominate the picture without burying it; ``None`` or ``1.0`` is the
-            full cover fit, and a small value puts the hand down on the picture's
-            corner instead.
+            full cover fit, and a small value puts the hand down in a corner of the
+            canvas instead.
         overlay_offset: Moves the overlay, as a fraction of the canvas:
             ``(0.0, -0.3)`` pushes it up by 30% of the height, ``(0.1, 0.0)`` to
             the right. Overlay that the offset moves past an edge grows the
             canvas to keep it visible, so pushing the hand up makes the returned
             image taller (``gif.size`` reflects that) while the subject keeps its
             size and its place near the bottom.
-        overlay_position: The spot on the picture that the overlay's visible
-            top-left corner is pinned to, as a fraction of the picture's own width
-            and height. ``(0.0, 0.0)`` (the default) is the picture's top-left
-            corner, ``(0.5, 0.5)`` its middle, ``(1.0, 1.0)`` its bottom-right
-            corner. The overlay is *not* clipped to the picture here: anything it
-            puts past the canvas edge is cropped instead.
+        overlay_position: The spot the overlay's visible top-left corner is pinned
+            to, as a fraction of the canvas: ``(0.0, 0.0)`` (the default) is the
+            canvas' own corner - the corner of the finished GIF, so the overlay
+            touches its left and top edges - while ``(0.5, 0.5)`` is the middle
+            and ``(1.0, 1.0)`` the bottom-right corner. Overflow past the canvas
+            edge is cropped.
         static_overlay_ms: Cycle length used when ``overlay`` is not animated.
         background: Colour to flatten transparency onto, e.g. ``"white"`` or
             ``(255, 255, 255)``. ``None`` keeps the canvas transparent.
