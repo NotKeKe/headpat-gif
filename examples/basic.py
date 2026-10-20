@@ -35,8 +35,8 @@ def main() -> None:
     save(petpet(pet, duration=1.5, squash=0.0), OUT / "06-no-squash.gif")
     save(petpet(pet, duration=1.5, background="white"), OUT / "07-white-background.gif")
     save(
-        petpet(pet, duration=1.5, overlay_anchor="center"),
-        OUT / "08-anchored-to-the-centre.gif",
+        petpet(pet, duration=1.5, overlay_bottom=0.7),
+        OUT / "08-hand-lands-higher.gif",
     )
 
     # A caller supplied overlay: a big transparent canvas with a small heart in

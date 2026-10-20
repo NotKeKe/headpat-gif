@@ -2,12 +2,11 @@
 
 from __future__ import annotations
 
-from typing import cast
-
 import pytest
 from PIL import Image
 
-from headpat_gif import OverlayAnchor, petpet
+from headpat_gif import petpet
+from headpat_gif._compose import overlay_sprite_size
 from support import frame_alpha_boxes
 
 CANVAS = 100
@@ -83,118 +82,59 @@ def test_the_overlay_covers_the_whole_canvas_by_default() -> None:
     assert frame_alpha_boxes(gif.to_bytes())[0] == (0, 0, 60, 60)
 
 
-def test_the_overlay_sits_at_the_top_by_default() -> None:
-    box = _sprite_box("top")
+def test_the_overlay_is_scaled_uniformly_whatever_the_canvas_shape() -> None:
+    # A 1:2 hand must stay 1:2 - on a wide canvas, a tall one and a square one.
+    frame = Image.new("RGBA", (30, 60))
 
-    assert box == (15, 0, 45, 30)  # flush with the top edge, horizontally centred
+    for box in [(256, 64), (64, 256), (100, 100), (400, 100)]:
+        width, height = overlay_sprite_size(frame, box, None)
+        assert abs(width / height - 0.5) < 0.02, box
+        # ...and the cover fit never leaves a gap along either axis.
+        assert width >= box[0] - 1
+        assert height >= box[1] - 1
 
 
-def test_the_offset_moves_the_overlay_and_grows_the_canvas() -> None:
-    # Only the top half of this overlay is opaque, so a vertical offset shows up
-    # as the opaque band sliding down the canvas.
-    transparent = Image.new("RGBA", (60, 60), (0, 0, 0, 0))
-    overlay = Image.new("RGBA", (20, 20), (0, 0, 0, 0))
-    overlay.paste(Image.new("RGBA", (20, 10), (0, 200, 0, 255)), (0, 0))
+def test_cover_overflow_is_cropped_instead_of_growing_the_canvas() -> None:
+    square = Image.new("RGBA", (20, 20), (0, 200, 0, 255))
+    wide = Image.new("RGBA", (400, 50), (10, 10, 10, 255))
+    tall = Image.new("RGBA", (50, 400), (10, 10, 10, 255))
 
-    def render(offset: tuple[float, float]) -> tuple[tuple[int, int], tuple[int, int, int, int]]:
-        gif = petpet(
-            transparent,
-            overlay,
-            duration=0.2,
-            static_overlay_ms=200,
-            max_size=60,
-            overlay_offset=offset,
-        )
+    for subject in (wide, tall):
+        gif = petpet(subject, square, duration=0.2, max_size=200)
         box = frame_alpha_boxes(gif.to_bytes())[0]
         assert box is not None
-        return gif.size, box
-
-    rest_size, rest_box = render((0.0, 0.0))
-    down_size, down_box = render((0.0, 0.5))
-    up_size, up_box = render((0.0, -0.5))
-
-    # Nothing moves and nothing grows without an offset.
-    assert rest_size == (60, 60)
-    assert rest_box[:3] == (0, 0, 60)
-    assert rest_box[3] < 35  # the opaque band sits across the top
-
-    # Pushing the overlay down grows the canvas downwards...
-    assert down_size == (60, 90)
-    assert down_box[1] >= 30
-
-    # ...and pushing it up grows the canvas upwards, without slicing the
-    # overlay: the band still starts at the very top of the picture.
-    assert up_size == (60, 90)
-    assert up_box[:3] == (0, 0, 60)
-    assert up_box[3] == rest_box[3]
+        # The canvas is the subject's size: the hand is meant to run off the top.
+        assert gif.size in {(200, 25), (25, 200)}
+        assert box[1] == 0
+        assert box[3] == gif.size[1]
 
 
-def test_a_horizontal_offset_grows_the_canvas_sideways() -> None:
-    transparent = Image.new("RGBA", (60, 60), (0, 0, 0, 0))
-    square = Image.new("RGBA", (20, 20), (0, 200, 0, 255))
-
-    def size(offset: tuple[float, float]) -> tuple[int, int]:
-        gif = petpet(
-            transparent,
-            square,
-            duration=0.2,
-            static_overlay_ms=200,
-            max_size=60,
-            overlay_offset=offset,
-        )
-        return gif.size
-
-    assert size((0.0, 0.0)) == (60, 60)
-    assert size((0.5, 0.0)) == (90, 60)
-    assert size((-0.5, 0.0)) == (90, 60)
-
-
-def test_the_subject_keeps_its_size_when_the_canvas_grows() -> None:
-    subject = Image.new("RGBA", (60, 60), (200, 60, 60, 255))
-    # A transparent overlay still claims its own rectangle, so the canvas grows,
-    # while the alpha box below measures the subject alone.
-    invisible = Image.new("RGBA", (20, 20), (0, 0, 0, 0))
-
-    plain = petpet(subject, invisible, duration=0.2, max_size=60, loop=False)
-    taller = petpet(
-        subject,
-        invisible,
-        duration=0.2,
-        max_size=60,
-        loop=False,
-        overlay_offset=(0.0, 0.5),
-    )
-    plain_box = frame_alpha_boxes(plain.to_bytes())[0]
-    taller_box = frame_alpha_boxes(taller.to_bytes())[0]
-
-    assert plain_box is not None and taller_box is not None
-    assert taller.size == (60, 90)
-    # Same subject, same size: only the empty room below it changed.
-    assert taller_box[3] - taller_box[1] == plain_box[3] - plain_box[1]
-    assert taller_box[1] == plain_box[1]
-
-
-def test_the_overlay_anchor_can_be_moved() -> None:
-    assert _sprite_box("center") == (15, 15, 45, 45)
-    assert _sprite_box("bottom") == (15, 30, 45, 60)
+def test_the_overlay_bottom_places_the_hand() -> None:
+    # Half-size square overlay on a 60px canvas: it lands wherever its bottom
+    # edge is told to.
+    assert _sprite_box(1.0) == (15, 30, 45, 60)  # bottom edge of the picture
+    assert _sprite_box(0.75) == (15, 15, 45, 45)
+    assert _sprite_box(0.5) == (15, 0, 45, 30)  # centred landing point
 
 
 def test_the_overlay_offset_nudges_the_anchored_position() -> None:
-    assert _sprite_box("top", offset=(0.0, 0.25)) == (15, 15, 45, 45)
-    assert _sprite_box("top", offset=(-0.25, 0.0))[0] < 15
+    # Nudged down by a quarter of the canvas: the canvas grows to keep it.
+    assert _sprite_box(1.0, offset=(-0.25, 0.25), size=(60, 75)) == (0, 45, 30, 75)
 
 
-def test_an_unknown_anchor_is_rejected() -> None:
+def test_a_non_finite_overlay_bottom_is_rejected() -> None:
     subject = Image.new("RGBA", (10, 10), (0, 0, 0, 0))
 
-    with pytest.raises(ValueError, match="overlay_anchor"):
-        petpet(subject, duration=0.2, overlay_anchor=cast("OverlayAnchor", "middle"))
+    with pytest.raises(ValueError, match="overlay_bottom"):
+        petpet(subject, duration=0.2, overlay_bottom=float("nan"))
 
 
 def _sprite_box(
-    anchor: OverlayAnchor, offset: tuple[float, float] = (0.0, 0.0)
+    bottom: float,
+    offset: tuple[float, float] = (0.0, 0.0),
+    size: tuple[int, int] = (60, 60),
 ) -> tuple[int, ...]:
-    """Alpha box of a half-size square overlay placed with ``anchor`` on a 60px canvas."""
+    """Alpha box of a half-size square overlay whose bottom edge is at ``bottom``."""
     transparent = Image.new("RGBA", (60, 60), (0, 0, 0, 0))
     square = Image.new("RGBA", (20, 20), (0, 200, 0, 255))
     gif = petpet(
@@ -204,11 +144,12 @@ def _sprite_box(
         static_overlay_ms=200,
         max_size=60,
         overlay_scale=0.5,
-        overlay_anchor=anchor,
+        overlay_bottom=bottom,
         overlay_offset=offset,
     )
     box = frame_alpha_boxes(gif.to_bytes())[0]
 
+    assert gif.size == size
     assert box is not None
     return box
 

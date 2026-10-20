@@ -21,16 +21,14 @@ from importlib.metadata import PackageNotFoundError, version
 
 from ._api import petpet, save
 from ._assets import DEFAULT_OVERLAY_NAME
-from ._compose import ANCHORS, MIN_DELAY_MS, OverlayAnchor
+from ._compose import MIN_DELAY_MS
 from ._result import PetPetGif
 from ._sources import ImageSource
 
 __all__ = [
-    "ANCHORS",
     "DEFAULT_OVERLAY_NAME",
     "MIN_DELAY_MS",
     "ImageSource",
-    "OverlayAnchor",
     "PetPetGif",
     "petpet",
     "save",

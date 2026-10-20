@@ -16,7 +16,7 @@ from pathlib import Path
 
 from PIL import Image
 
-from headpat_gif import ANCHORS, petpet
+from headpat_gif import petpet
 
 #: Where ``--out`` defaults to when it is not given.
 DEFAULT_OUT = Path(__file__).parent / "out" / "try-yours.gif"
@@ -54,10 +54,11 @@ def build_parser() -> argparse.ArgumentParser:
         "(default: cover the whole picture)",
     )
     parser.add_argument(
-        "--anchor",
-        choices=ANCHORS,
-        default="top",
-        help="where a shrunken overlay sits in the picture",
+        "--bottom",
+        type=float,
+        default=1.0,
+        help="where the bottom edge of the hand lands, as a fraction of the height "
+        "(1.0 = bottom of the picture, 0.5 = half way up)",
     )
     parser.add_argument(
         "--offset",
@@ -87,7 +88,7 @@ def main() -> None:
         squash=args.squash,
         max_size=args.max_size,
         overlay_scale=args.scale,
-        overlay_anchor=args.anchor,
+        overlay_bottom=args.bottom,
         overlay_offset=tuple(args.offset),
         name=args.name,
     )

@@ -56,13 +56,16 @@ gif = petpet("pet.png", duration=2.0, speed=2.0)
 gif = petpet("pet.png", duration=2.0, loop=False)
 
 # A small hand resting on the head instead of covering the picture.
-gif = petpet("pet.png", overlay_scale=0.4, overlay_anchor="top")
+gif = petpet("pet.png", overlay_scale=0.4, overlay_bottom=0.45)
 
-# Move the hand: fractions of the canvas. Negative y is up, and the picture
-# grows to fit rather than slicing the hand off.
+# Where the hand sits: the bottom of the visible overlay is a fraction of the
+# picture's height. 1.0 is the bottom edge (the whole picture, the default).
+gif = petpet("pet.png", overlay_bottom=0.6)    # hand ends 60% of the way down
+
+# Nudge the hand. Fractions of the canvas; negative y is up. The canvas grows
+# by whatever the nudge displaces, so the hand is never sliced off.
 gif = petpet("pet.png", overlay_offset=(0.0, -0.3))   # 30% taller, hand complete
 gif = petpet("pet.png", overlay_offset=(0.1, 0.15))   # down and to the right
-gif = petpet("pet.png", overlay_offset=(0.0, 0.5), overlay_scale=0.4)  # bottom third
 
 # Your own overlay: a path, bytes, an open file or a PIL image - GIF or still.
 gif = petpet("pet.png", "heart.gif")
@@ -75,7 +78,7 @@ gif = petpet(
     duration=1.5,
     squash=1.4,                 # harder squash
     overlay_scale=0.6,          # shrink the overlay to a hop-on-the-head size
-    overlay_offset=(0.0, -0.05),  # nudge it up a touch
+    overlay_bottom=0.4,         # ...and leave the face in view below it
 )
 
 save(gif, "out/pet.gif")   # or: gif.save("out/pet.gif")
@@ -111,9 +114,9 @@ squash is synchronised to that timeline. A still overlay is shown for
 | `max_size` | `256` | Longest side of the canvas in pixels (aspect ratio preserved). |
 | `image_scale` | `0.8` | Subject size inside the canvas once it is back to normal. |
 | `squash` | `1.0` | Squash strength. `0` disables it, `1` matches the reference. |
-| `overlay_scale` | `None` | Overlay size. `None` stretches it over the whole canvas (the hand covers the picture); a number scales it to that fraction of a snug fit, e.g. `0.4` for a small hand on the head. |
-| `overlay_offset` | `(0.0, 0.0)` | Move the overlay, as a fraction of the canvas: `(0.0, -0.2)` up, `(0.1, 0.0)` right. The canvas **grows** to fit instead of cropping, so `(0.0, -0.3)` makes the picture 30% taller. |
-| `overlay_anchor` | `"top"` | Where a *shrunken* overlay sits: `"top"`, `"center"` or `"bottom"`. |
+| `overlay_scale` | `None` | The overlay is always scaled **uniformly**. `None` uses the cover fit (whichever canvas axis asks for the bigger factor, so it covers the picture and a portrait hand stays a portrait hand); a number multiplies it, e.g. `0.45` for a hand under half that size. |
+| `overlay_offset` | `(0.0, 0.0)` | Moves the overlay, as a fraction of the canvas: `(0.0, -0.2)` up, `(0.1, 0.0)` right. The canvas grows by whatever the nudge displaces, so the hand is not sliced off. |
+| `overlay_bottom` | `1.0` | Where the **bottom edge of the visible overlay** sits, as a fraction of the canvas height: `1.0` on the bottom edge, `0.5` half way up. This is what positions the hand. |
 | `static_overlay_ms` | `500` | Cycle length when `overlay` is a still image. |
 | `background` | `None` | Colour to flatten transparency onto, e.g. `"white"`. |
 | `name` | `"petpet.gif"` | Filename reported to Discord. |
@@ -161,9 +164,11 @@ Module level convenience wrapper around `PetPetGif.save`.
    (0.8 → 0.9 wide, 0.8 → 0.55 tall), so the motion feels like the GIFs people
    already know.
 3. The overlay is pasted on top, sampled against its own frame durations, and
-   plays exactly once per pat. By default it is stretched over the whole canvas,
-   so a patting hand covers the picture and the subject squashes underneath it -
-   the classic pet-pet look. Pass `overlay_scale` to shrink it onto the head.
+   plays exactly once per pat. It is scaled **uniformly**: the default cover fit
+   multiplies it so it covers the whole picture without ever changing its aspect
+   ratio, which is why the hand stays a hand on wide or tall inputs. Its visible
+   bottom edge is pinned at `overlay_bottom` of the canvas height, so the hand
+   lands where you point it. Pass `overlay_scale` to shrink it onto the head.
 4. Every frame is converted to palette mode with a dedicated transparent index
    and saved with `disposal=3` ("restore to previous"). Without the palette step
    Pillow writes black boxes around transparent areas; with disposal 2 instead

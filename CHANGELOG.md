@@ -6,6 +6,40 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-20
+
+### Fixed
+
+- The overlay no longer changes its aspect ratio with the input. It used to be
+  resized straight to the canvas, so a wide picture got a horizontally stretched
+  hand and a tall one got a squashed hand. It is now scaled uniformly, by a single
+  factor taken from whichever canvas axis asks for the bigger one (a "cover"
+  fit), so the hand is always enlarged - or shrunk - by the same amount in both
+  directions, exactly like the source GIF.
+
+### Added
+
+- `overlay_bottom`: where the bottom edge of the visible overlay sits, as a
+  fraction of the canvas height. `1.0` (the default) rests it on the bottom edge;
+  `0.6` puts the hand's lower edge 60% of the way down. This is the knob that
+  positions the hand - a hand drawn in the upper part of its own frame is
+  positioned by where its pixels actually end, not by the frame's bounding box.
+
+### Changed
+
+- **Breaking:** `overlay_scale` is now a multiplier on that uniform cover fit
+  instead of a "snug fit" fraction. `overlay_scale=0.4` still means "a small hand
+  on the head" but is computed from the cover size, so the numbers behave
+  differently from `0.1.0`.
+- **Breaking:** removed `overlay_anchor`. `overlay_bottom` positions the overlay
+  at any height, so a separate top/center/bottom switch was redundant.
+- Overflow caused by the cover fit is now cropped instead of growing the canvas.
+  The canvas still grows for `overlay_offset`, so `overlay_offset=(0.0, -0.3)`
+  keeps returning an image 30% taller - it only grows for the nudge, not for the
+  scaling.
+
+## [0.1.0] - 2026-10-18
+
 ### Added
 
 - `petpet(image, overlay=None, *, ...)` returning a `PetPetGif`.
@@ -40,4 +74,6 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   instead of resting after a single pat. Looping now fits a whole number of
   cycles into `duration`, so the infinitely looping GIF has no visible jump.
 
-[Unreleased]: https://github.com/NotKeKe/headpat-gif/commits/main
+[Unreleased]: https://github.com/NotKeKe/headpat-gif/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/NotKeKe/headpat-gif/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/NotKeKe/headpat-gif/releases/tag/v0.1.0

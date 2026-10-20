@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import io
+import math
 import os
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -10,13 +11,7 @@ from typing import TYPE_CHECKING
 from PIL import Image, ImageColor
 
 from ._assets import load_default_overlay
-from ._compose import (
-    ANCHORS,
-    MIN_DELAY_MS,
-    OverlayAnchor,
-    plan_timeline,
-    render_frames,
-)
+from ._compose import MIN_DELAY_MS, plan_timeline, render_frames
 from ._palette import save_transparent_gif
 from ._result import PetPetGif
 from ._sources import ImageSource, load_first_frame, load_overlay_frames
@@ -49,7 +44,7 @@ def petpet(
     squash: float = 1.0,
     overlay_scale: float | None = None,
     overlay_offset: tuple[float, float] = (0.0, 0.0),
-    overlay_anchor: OverlayAnchor = "top",
+    overlay_bottom: float = 1.0,
     static_overlay_ms: int = DEFAULT_STATIC_OVERLAY_MS,
     background: ColorLike | None = None,
     name: str = "petpet.gif",
@@ -83,23 +78,22 @@ def petpet(
             it is back to normal.
         squash: Squash strength multiplier. ``0`` disables the squash entirely,
             ``1`` matches the amplitude of the reference implementation.
-        overlay_scale: Size of the overlay. ``None`` (the default) stretches it
-            over the whole canvas - the overlay is authored for the canvas, so a
-            patting hand covers the picture the way it does in
-            https://github.com/camprevail/pet-pet-gif. A number scales it to that
-            fraction of a snug, aspect preserving fit instead, e.g. ``0.4`` for a
-            small hand resting on the head.
+        overlay_scale: Size of the overlay. The overlay is always scaled
+            **uniformly**, by whichever of the canvas' two dimensions asks for the
+            bigger factor, so it covers the picture without being stretched on a
+            wide or tall image. ``None`` (the default) uses that cover fit as-is;
+            a number multiplies it, e.g. ``0.5`` for a hand half that size.
         overlay_offset: Moves the overlay, as a fraction of the canvas:
             ``(0.0, -0.3)`` pushes it up by 30% of the height, ``(0.1, 0.0)`` to
-            the right. Nothing gets sliced off - if the overlay leaves the
-            canvas, the canvas **grows** to include it, so pushing the hand up
-            makes the returned image taller (``gif.size`` reflects that) while
-            the subject keeps its size and its place near the bottom. Note that
-            the bundled hand already sits in the upper part of its own frame, so
-            nudging *up* shows less hand.
-        overlay_anchor: Where a shrunken overlay sits in the canvas: ``"top"``
-            (the default), ``"center"`` or ``"bottom"``. Only matters when
-            ``overlay_scale`` makes the overlay smaller than the canvas.
+            the right. Overlay that the offset moves past an edge grows the
+            canvas to keep it visible, so pushing the hand up makes the returned
+            image taller (``gif.size`` reflects that) while the subject keeps its
+            size and its place near the bottom.
+        overlay_bottom: Where the **bottom edge of the visible overlay** sits, as
+            a fraction of the canvas height. ``1.0`` (the default) puts it on the
+            bottom edge; ``0.5`` centres the hand's landing point on the picture.
+            This is what positions the hand, rather than an anchor on its
+            (possibly padded) frame.
         static_overlay_ms: Cycle length used when ``overlay`` is not animated.
         background: Colour to flatten transparency onto, e.g. ``"white"`` or
             ``(255, 255, 255)``. ``None`` keeps the canvas transparent.
@@ -127,7 +121,7 @@ def petpet(
         image_scale=image_scale,
         squash=squash,
         overlay_scale=overlay_scale,
-        overlay_anchor=overlay_anchor,
+        overlay_bottom=overlay_bottom,
         static_overlay_ms=static_overlay_ms,
     )
 
@@ -157,7 +151,7 @@ def petpet(
         squash=squash,
         overlay_scale=overlay_scale,
         overlay_offset=overlay_offset,
-        overlay_anchor=overlay_anchor,
+        overlay_bottom=overlay_bottom,
         background=_background_rgba(background),
     )
 
@@ -225,7 +219,7 @@ def _validate(
     image_scale: float,
     squash: float,
     overlay_scale: float | None,
-    overlay_anchor: str,
+    overlay_bottom: float,
     static_overlay_ms: int,
 ) -> None:
     if duration is not None and duration <= 0:
@@ -242,8 +236,8 @@ def _validate(
         raise ValueError(f"squash must not be negative, got {squash!r}")
     if overlay_scale is not None and overlay_scale <= 0:
         raise ValueError(f"overlay_scale must be greater than 0, got {overlay_scale!r}")
-    if overlay_anchor not in ANCHORS:
-        raise ValueError(f"overlay_anchor must be one of {ANCHORS}, got {overlay_anchor!r}")
+    if not math.isfinite(overlay_bottom):
+        raise ValueError(f"overlay_bottom must be a finite number, got {overlay_bottom!r}")
     if static_overlay_ms < MIN_DELAY_MS:
         raise ValueError(
             f"static_overlay_ms must be at least {MIN_DELAY_MS}, got {static_overlay_ms!r}"

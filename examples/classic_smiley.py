@@ -44,9 +44,9 @@ def main() -> None:
     save(petpet(face, duration=1.0, overlay_offset=(0.15, 0.0)), OUT / "smiley-hand-right.gif")
 
     # Shrink the overlay when you want a small hand resting on the head instead;
-    # overlay_anchor then decides where that smaller hand sits.
+    # overlay_bottom then says where that smaller hand lands.
     save(
-        petpet(face, duration=1.5, overlay_scale=0.4, overlay_anchor="top"),
+        petpet(face, duration=1.5, overlay_scale=0.4, overlay_bottom=0.45),
         OUT / "smiley-small-hand.gif",
     )
 

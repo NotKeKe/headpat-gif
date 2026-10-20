@@ -58,8 +58,11 @@ def test_a_leaving_overlay_leaves_nothing_behind() -> None:
     assert after and all(frame.getchannel("A").getbbox() is None for frame in after)
 
 
-def test_pixels_outside_the_subject_stay_transparent(subject: Image.Image) -> None:
-    image = Image.open(io.BytesIO(petpet(subject, duration=0.5).to_bytes()))
+def test_pixels_outside_the_subject_stay_transparent(
+    subject: Image.Image, invisible: Image.Image
+) -> None:
+    # An invisible overlay isolates the canvas; the bundled hand covers it.
+    image = Image.open(io.BytesIO(petpet(subject, invisible, duration=0.5).to_bytes()))
     for index in range(getattr(image, "n_frames", 1)):
         image.seek(index)
         assert pixel(image.convert("RGBA"), (0, 0))[3] == 0
@@ -86,9 +89,11 @@ def test_a_hole_inside_the_subject_survives_the_round_trip(invisible: Image.Imag
     assert body[:3] != (0, 0, 0)  # and the body did not lose its colour
 
 
-def test_transparent_areas_are_not_baked_in_as_black(subject: Image.Image) -> None:
+def test_transparent_areas_are_not_baked_in_as_black(
+    subject: Image.Image, invisible: Image.Image
+) -> None:
     # The classic failure mode is transparent pixels coming out opaque black.
-    gif = petpet(subject, duration=0.5)
+    gif = petpet(subject, invisible, duration=0.5)
     width, height = gif.size
     frame = frame_rgba(gif.to_bytes(), 0)
 
