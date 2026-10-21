@@ -94,32 +94,55 @@ def test_the_overlay_is_scaled_uniformly_whatever_the_canvas_shape() -> None:
     for box in [(256, 64), (64, 256), (100, 100), (400, 100)]:
         width, height = overlay_sprite_size(frame, box, None)
         assert abs(width / height - 0.5) < 0.02, box
-        # ...and the cover fit never leaves a gap along either axis.
-        assert width >= box[0] - 1
-        assert height >= box[1] - 1
+        # ...and the width always matches the canvas, whatever its shape.
+        assert abs(width - box[0]) <= 1, box
 
 
-def test_an_overlay_bigger_than_the_canvas_is_cropped_not_shrunk() -> None:
+def test_a_tall_picture_gets_a_hand_to_match_its_width() -> None:
+    # The bug this guards: scaling by whichever axis wants the bigger factor made
+    # a 9:16 picture blow the hand up past the frame width, so the picture was
+    # buried under it.
+    frame = Image.new("RGBA", (107, 112))
+
+    portrait = overlay_sprite_size(frame, (144, 256), 0.8)
+    landscape = overlay_sprite_size(frame, (256, 144), 0.8)
+
+    assert portrait == (115, 121)  # narrower than the canvas: it fits
+    assert landscape == (205, 214)  # unchanged from before
+    assert portrait[0] <= 144
+    assert landscape[0] <= 256
+
+
+def test_an_overlay_taller_than_the_canvas_is_cropped_not_shrunk() -> None:
     square = Image.new("RGBA", (20, 20), (0, 200, 0, 255))
-    wide = Image.new("RGBA", (400, 50), (10, 10, 10, 255))
-    tall = Image.new("RGBA", (50, 400), (10, 10, 10, 255))
-
+    # Transparent subjects, so the alpha box measures the overlay alone.
+    wide = Image.new("RGBA", (400, 50), (0, 0, 0, 0))
+    tall = Image.new("RGBA", (50, 400), (0, 0, 0, 0))
+    gif = petpet(
+        wide,
+        square,
+        duration=0.2,
+        max_size=200,
+        overlay_scale=1.0,
+        overlay_offset=(0.0, 0.0),
+    )
+    assert gif.size == (200, 25)
     # A 200x200 overlay on a 200x25 canvas: it starts in the canvas' own corner
-    # and runs off the right and bottom edges, which are cropped.
-    for subject in (wide, tall):
-        gif = petpet(
-            subject,
-            square,
-            duration=0.2,
-            max_size=200,
-            overlay_scale=1.0,
-            overlay_offset=(0.0, 0.0),
-        )
-        box = frame_alpha_boxes(gif.to_bytes())[0]
+    # and runs off the bottom, which is cropped.
+    assert frame_alpha_boxes(gif.to_bytes())[0] == (0, 0, 200, 25)
 
-        assert box is not None
-        assert gif.size in {(200, 25), (25, 200)}
-        assert box == (0, 0, gif.size[0], gif.size[1])
+    gif = petpet(
+        tall,
+        square,
+        duration=0.2,
+        max_size=200,
+        overlay_scale=1.0,
+        overlay_offset=(0.0, 0.0),
+    )
+    assert gif.size == (25, 200)
+    # On a 25x200 canvas the width match makes it 25x25: the same relative size
+    # as the hand on the wide picture, just a narrow picture.
+    assert frame_alpha_boxes(gif.to_bytes())[0] == (0, 0, 25, 25)
 
 
 def test_the_overlay_reaches_the_canvas_edges_by_default() -> None:

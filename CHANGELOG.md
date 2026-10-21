@@ -6,6 +6,17 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.1b4] - 2026-10-21
+
+### Fixed
+
+- The overlay is scaled by the canvas' **width** instead of by whichever axis
+  wanted the bigger factor. On a portrait picture such as 9:16 the old "cover"
+  rule picked the *height*, so a 144x256 output drew the hand at 196x205 - 1.7x
+  wider than the frame, with the picture buried underneath. Tall pictures now get
+  a hand to match their width (115x121 for the same canvas), and wide and square
+  pictures are unchanged.
+
 ## [0.2.1b3] - 2026-10-20
 
 ### Changed
@@ -114,7 +125,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   instead of resting after a single pat. Looping now fits a whole number of
   cycles into `duration`, so the infinitely looping GIF has no visible jump.
 
-[Unreleased]: https://github.com/NotKeKe/headpat-gif/compare/v0.2.1b3...HEAD
+[Unreleased]: https://github.com/NotKeKe/headpat-gif/compare/v0.2.1b4...HEAD
+[0.2.1b4]: https://github.com/NotKeKe/headpat-gif/compare/v0.2.1b3...v0.2.1b4
 [0.2.1b3]: https://github.com/NotKeKe/headpat-gif/compare/v0.2.1b2...v0.2.1b3
 [0.2.1b2]: https://github.com/NotKeKe/headpat-gif/compare/v0.2.1b1...v0.2.1b2
 [0.2.1b1]: https://github.com/NotKeKe/headpat-gif/compare/v0.2.0...v0.2.1b1

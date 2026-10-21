@@ -176,14 +176,21 @@ def overlay_sprite_size(
 ) -> tuple[int, int]:
     """Size the overlay is drawn at, before any offset moves it.
 
-    The overlay is scaled **uniformly** - the same factor on both axes, so a
-    portrait hand stays a portrait hand on a wide picture - and the factor comes
-    from whichever dimension asks for the bigger one, so the overlay covers the
-    canvas instead of leaving gaps. ``factor`` (the caller's ``overlay_scale``)
-    multiplies that; ``None`` means "use the cover fit as-is".
+    The overlay's **width** is matched to the canvas' width and its height
+    follows from the overlay's own aspect ratio - the same factor on both axes,
+    so a portrait hand stays a portrait hand.
+
+    Matching the width is what keeps the hand the same size whatever shape the
+    picture is. Picking whichever axis wants the bigger factor instead ("cover")
+    makes a 9:16 picture scale the hand by its *height*, so the hand comes out
+    1.7x wider than the frame and the picture disappears underneath it.
+
+    ``factor`` (the caller's ``overlay_scale``) multiplies the width match;
+    ``None`` uses it as-is. Height that runs past the canvas is cropped, which is
+    what a hand coming down over a picture is supposed to look like.
     """
     zoom = 1.0 if factor is None else factor
-    ratio = max(box[0] / frame.width, box[1] / frame.height) * zoom
+    ratio = box[0] / frame.width * zoom
     return max(1, round(frame.width * ratio)), max(1, round(frame.height * ratio))
 
 

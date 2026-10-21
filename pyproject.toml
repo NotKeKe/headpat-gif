@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "headpat-gif"
-version = "0.2.1b3"
+version = "0.2.1b4"
 description = "Generate \"pet-pet\" GIFs: a hand pats the head of any image while the subject squashes and springs back. Returns an object you can hand straight to discord.py."
 readme = "README.md"
 requires-python = ">=3.10"

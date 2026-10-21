@@ -120,7 +120,7 @@ squash is synchronised to that timeline. A still overlay is shown for
 | `max_size` | `256` | Longest side of the canvas in pixels (aspect ratio preserved). |
 | `image_scale` | `0.8` | Subject size inside the canvas once it is back to normal. |
 | `squash` | `1.0` | Squash strength. `0` disables it, `1` matches the reference. |
-| `overlay_scale` | `0.8` | The overlay is always scaled **uniformly**: the factor comes from whichever canvas axis asks for the bigger one, so it covers the picture without distorting and a portrait hand stays a portrait hand. `1.0` is that full cover fit; the default `0.8` leaves a little of the picture showing, and `0.3` is a small hand. |
+| `overlay_scale` | `0.8` | The overlay's **width** is matched to the canvas' width, and its height follows from its own aspect ratio, so it is the same size whatever shape the picture is and a portrait hand stays a portrait hand. `1.0` spans the full width; the default `0.8` leaves a little of the picture showing, and `0.3` is a small hand. |
 | `overlay_offset` | `(0.0, -0.15)` | Moves the overlay, as a fraction of the canvas: negative y is up, `(0.1, 0.0)` is right. The canvas grows by whatever the nudge displaces, so the hand is not sliced off. The default lifts the hand 15% above the picture's top edge - that is why the default output is 15% taller than the input's aspect ratio. Pass `(0.0, 0.0)` for a canvas that matches the picture exactly. |
 | `overlay_position` | `(0.0, 0.0)` | Where the overlay hangs from: the fraction of the **canvas** that its visible top-left corner is pinned to. `(0.0, 0.0)` is the canvas' top-left corner - the corner of the finished GIF, so the overlay touches the left and top edges - `(0.5, 0.5)` its middle, `(1.0, 1.0)` its bottom-right. |
 | `static_overlay_ms` | `500` | Cycle length when `overlay` is a still image. |
@@ -170,12 +170,13 @@ Module level convenience wrapper around `PetPetGif.save`.
    (0.8 → 0.9 wide, 0.8 → 0.55 tall), so the motion feels like the GIFs people
    already know.
 3. The overlay is pasted on top, sampled against its own frame durations, and
-   plays exactly once per pat. It is scaled **uniformly**: one factor, from
-   whichever canvas axis asks for the bigger one, then multiplied by
-   `overlay_scale` (0.8 by default). Its visible top-left corner - measured from
-   the alpha channel, so a padded GIF does not leave a gap - is pinned to
-   `overlay_position` of the canvas, `(0.0, 0.0)` being the corner of the
-   finished GIF. Anything the overlay puts past the canvas edge is cropped.
+   plays exactly once per pat. Its **width** is matched to the canvas' width -
+   times `overlay_scale`, 0.8 by default - and its height follows from its own
+   aspect ratio, so the hand is the same size whether the picture is wide or
+   tall. Its visible top-left corner, measured from the alpha channel so a padded
+   GIF does not leave a gap, is pinned to `overlay_position` of the canvas,
+   `(0.0, 0.0)` being the corner of the finished GIF. Anything the overlay puts
+   past the canvas edge is cropped.
 4. Every frame is converted to palette mode with a dedicated transparent index
    and saved with `disposal=3` ("restore to previous"). Without the palette step
    Pillow writes black boxes around transparent areas; with disposal 2 instead

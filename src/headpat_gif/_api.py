@@ -85,13 +85,13 @@ def petpet(
             it is back to normal.
         squash: Squash strength multiplier. ``0`` disables the squash entirely,
             ``1`` matches the amplitude of the reference implementation.
-        overlay_scale: Size of the overlay. The overlay is always scaled
-            **uniformly**, by whichever of the canvas' two dimensions asks for the
-            bigger factor, so it keeps its shape on a wide or tall image. The
-            default (``0.8``) draws it at 80% of that cover fit, big enough to
-            dominate the picture without burying it; ``None`` or ``1.0`` is the
-            full cover fit, and a small value puts the hand down in a corner of the
-            canvas instead.
+        overlay_scale: Size of the overlay. Its **width** is matched to the
+            canvas' width and its height follows from the overlay's own aspect
+            ratio, so it keeps its shape and the same size whatever shape the
+            picture is - a hand scaled by a tall picture's height would come out
+            wider than the frame. The default (``0.8``) draws it at 80% of that
+            width; ``None`` or ``1.0`` spans the full width, and a small value puts
+            the hand down in a corner of the canvas instead.
         overlay_offset: Moves the overlay, as a fraction of the canvas:
             ``(0.0, -0.3)`` pushes it up by 30% of the height, ``(0.1, 0.0)`` to
             the right. Overlay that the offset moves past an edge grows the
